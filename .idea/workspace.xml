@@ -6,25 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="79200ede-4e04-440c-aa50-e1e3530460ff" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data-files/accounts.json" beforeDir="false" afterPath="$PROJECT_DIR$/data-files/accounts.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/nazeer/attendance/controller/AttendanceController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nazeer/attendance/controller/AttendanceController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/nazeer/attendance/service/FileDataStoreService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/nazeer/attendance/service/FileDataStoreService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/css/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/controller/AttendanceController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/controller/AttendanceController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/controller/AuthController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/controller/AuthController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/service/FileDataStoreService$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/service/FileDataStoreService$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/service/FileDataStoreService$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/service/FileDataStoreService$2.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/service/FileDataStoreService$3.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/service/FileDataStoreService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/nazeer/attendance/service/FileDataStoreService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/static/css/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/static/css/styles.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/static/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/static/js/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/static/js/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

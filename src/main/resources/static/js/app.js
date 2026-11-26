@@ -17,7 +17,7 @@
       dark: false,
       editingEmpId: null,
       expandedKeys: new Set(),
-      period: 'all', // all | last-week | last-month | custom
+      period: 'all', // all | last-week | custom
       customFrom: '',
       customTo: '',
       dailyLimit: 'all',
@@ -146,6 +146,8 @@
     $('empTableWrap').className = `${admin ? 'lg:col-span-2' : 'lg:col-span-3'} bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4`;
     $('hdrUser').textContent = state.currentUser.username;
     $('hdrCompany').textContent = state.currentUser.companyName;
+    if ($('mobUser')) $('mobUser').textContent = state.currentUser.username;
+    if ($('mobCompany')) $('mobCompany').textContent = state.currentUser.companyName;
 
     if (admin) {
       $('roleBadge').textContent = 'ADMIN';
@@ -201,11 +203,6 @@
       const start = shiftDateByDays(latest, -6);
       return dateStr >= start && dateStr <= latest;
     }
-    if (mode === 'last-month') {
-      const latest = getLatestDataDate();
-      const start = shiftDateByDays(latest, -29);
-      return dateStr >= start && dateStr <= latest;
-    }
     if (mode === 'custom') {
       if (state.ui.customFrom && dateStr < state.ui.customFrom) return false;
       if (state.ui.customTo && dateStr > state.ui.customTo) return false;
@@ -224,7 +221,6 @@
     const badge = $('activePeriodBadge');
     if (mode === 'all') badge.textContent = 'Showing All Data';
     else if (mode === 'last-week') badge.textContent = hasLastWeekFileData() ? 'Showing Last Week File (attendance-last-week.dat)' : 'Showing Last 7 Days Report';
-    else if (mode === 'last-month') badge.textContent = 'Showing Last 30 Days Report';
     else badge.textContent = `Custom Period: ${state.ui.customFrom || 'Start'} to ${state.ui.customTo || 'End'}`;
   }
 
@@ -464,8 +460,14 @@
     $('tab-' + tab).classList.remove('hidden');
     document.querySelectorAll('.nav-btn').forEach(b => {
       const act = b.dataset.tab === tab, adm = b.classList.contains('admin-only');
-      b.className = `nav-btn${adm ? ' admin-only' : ''}${adm && !isAdmin() ? ' hidden' : ''} inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition ${act ? 'bg-covibe-teal text-white shadow-sm' : 'text-slate-200 hover:bg-white/10'}`;
+      b.className = `nav-btn${adm ? ' admin-only' : ''}${adm && !isAdmin() ? ' hidden' : ''} inline-flex items-center gap-2 px-4 lg:px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition ${act ? 'bg-covibe-teal text-white shadow-sm' : 'text-slate-200 hover:bg-white/10'}`;
     });
+    document.querySelectorAll('.mob-nav-btn').forEach(b => {
+      const act = b.dataset.tab === tab, adm = b.classList.contains('admin-only');
+      const span2 = adm ? ' col-span-2' : '';
+      b.className = `mob-nav-btn${adm ? ' admin-only' : ''}${adm && !isAdmin() ? ' hidden' : ''}${span2} flex items-center gap-2 px-3 py-2.5 rounded-xl text-xs font-semibold ${act ? 'bg-covibe-teal text-white' : 'bg-white/10 text-slate-100'}`;
+    });
+    if ($('mobileDrawer')) $('mobileDrawer').classList.add('hidden');
     if (tab === 'overview') renderOverview();
   }
 
@@ -499,6 +501,9 @@
     });
 
     $('mainNav').addEventListener('click', e => { const b = e.target.closest('.nav-btn'); if (b) switchTab(b.dataset.tab); });
+    if ($('mobileNav')) $('mobileNav').addEventListener('click', e => { const b = e.target.closest('.mob-nav-btn'); if (b) switchTab(b.dataset.tab); });
+    if ($('btnMobileMenu')) $('btnMobileMenu').addEventListener('click', () => $('mobileDrawer').classList.toggle('hidden'));
+    if ($('btnMobLogout')) $('btnMobLogout').addEventListener('click', () => $('btnLogout').click());
     $('periodNav').addEventListener('click', e => {
       const b = e.target.closest('.period-btn');
       if (!b) return;
