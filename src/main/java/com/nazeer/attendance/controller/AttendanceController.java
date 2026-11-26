@@ -4,9 +4,7 @@ import com.nazeer.attendance.model.Account;
 import com.nazeer.attendance.model.Employee;
 import com.nazeer.attendance.model.PunchRecord;
 import com.nazeer.attendance.service.FileDataStoreService;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -25,30 +23,11 @@ public class AttendanceController {
 
     private boolean isClient(Account acc) { return !"ADMIN".equalsIgnoreCase(acc.role); }
 
-    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Map<String, Object> importAttendance(@RequestHeader(value = "X-Auth-Token", required = false) String token,
-                                                @RequestParam("file") MultipartFile file) throws Exception {
-        store.requireAdmin(token);
-        return store.importAttendanceFile(file);
-    }
-
-    @PostMapping(value = "/users/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Map<String, Object> importUsers(@RequestHeader(value = "X-Auth-Token", required = false) String token,
-                                           @RequestParam("file") MultipartFile file) throws Exception {
-        store.requireAdmin(token);
-        return store.importUsersFile(file);
-    }
-
-    @PostMapping("/users/generate-missing")
-    public Map<String, Object> generateMissing(@RequestHeader(value = "X-Auth-Token", required = false) String token) throws IOException {
-        store.requireAdmin(token);
-        return Map.of("created", store.generateMissingPlaceholders());
-    }
-
-    @DeleteMapping("/records/clear")
-    public Map<String, Object> clear(@RequestHeader(value = "X-Auth-Token", required = false) String token) throws IOException {
-        store.requireAdmin(token);
-        return Map.of("cleared", store.clearPunches());
+    private boolean visibleToUser(Employee e, Account acc) {
+        if (!isClient(acc)) return true;
+        // If this client has explicitly assigned employees, show only theirs; otherwise show all bundled records (masked)
+        if (!store.hasAssignedEmployees(acc.companyCode)) return true;
+        return e != null && acc.companyCode.equalsIgnoreCase(e.clientId);
     }
 
     @GetMapping("/users")
@@ -56,7 +35,7 @@ public class AttendanceController {
         Account acc = store.requireUser(token);
         boolean client = isClient(acc);
         return store.getEmployees().stream()
-                .filter(e -> !client || acc.companyCode.equalsIgnoreCase(e.clientId))
+                .filter(e -> visibleToUser(e, acc))
                 .map(e -> {
                     Map<String, Object> m = new LinkedHashMap<>();
                     m.put("employeeId", e.employeeId);
@@ -76,14 +55,6 @@ public class AttendanceController {
         return store.saveEmployee(emp);
     }
 
-    @DeleteMapping("/users/{id}")
-    public Map<String, String> deleteEmployee(@RequestHeader(value = "X-Auth-Token", required = false) String token,
-                                              @PathVariable String id) throws IOException {
-        store.requireAdmin(token);
-        store.deleteEmployee(id);
-        return Map.of("deleted", id);
-    }
-
     @GetMapping("/records")
     public List<Map<String, Object>> records(@RequestHeader(value = "X-Auth-Token", required = false) String token) {
         Account acc = store.requireUser(token);
@@ -91,13 +62,13 @@ public class AttendanceController {
         List<Map<String, Object>> out = new ArrayList<>();
         for (PunchRecord p : store.getPunches()) {
             Employee e = store.getEmployee(p.employeeId);
-            if (client && (e == null || !acc.companyCode.equalsIgnoreCase(e.clientId))) continue;
+            if (!visibleToUser(e, acc)) continue;
             String rawName = e != null ? e.name : "Employee " + p.employeeId;
             Map<String, Object> m = new LinkedHashMap<>();
             m.put("employeeId", p.employeeId);
             m.put("employeeName", client ? Employee.maskName(rawName) : rawName);
             m.put("clientId", e != null && e.clientId != null ? e.clientId : "");
-            m.put("clientName", e != null ? store.getCompanyName(e.clientId) : "Unassigned");
+            m.put("clientName", e != null ? store.getCompanyName(e.clientId) : "CoVibe");
             m.put("punchTime", p.punchTime);
             m.put("rawField3", p.rawField3);
             m.put("rawField4", p.rawField4);
@@ -118,7 +89,7 @@ public class AttendanceController {
         Map<String, List<PunchRecord>> byEmp = new TreeMap<>();
         for (PunchRecord p : store.getPunches()) {
             Employee e = store.getEmployee(p.employeeId);
-            if (client && (e == null || !acc.companyCode.equalsIgnoreCase(e.clientId))) continue;
+            if (!visibleToUser(e, acc)) continue;
             if (p.punchTime == null || p.punchTime.length() < 16) continue;
             byEmp.computeIfAbsent(p.employeeId, k -> new ArrayList<>()).add(p);
         }
@@ -213,7 +184,10 @@ public class AttendanceController {
                 row.put("inCount", ins.size());
                 row.put("outCount", outs.size());
                 row.put("minutes", mins);
-                row.put("punches", allMap.getOrDefault(key, List.of()));
+                List<PunchRecord> sessPunches = allMap.getOrDefault(key, List.of());
+                boolean fromLastWeekFile = sessPunches.stream().anyMatch(x -> "attendance-last-week.dat".equals(x.sourceFile));
+                row.put("fromLastWeekFile", fromLastWeekFile);
+                row.put("punches", sessPunches);
                 out.add(row);
             }
         });

@@ -9,13 +9,14 @@
   <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script>
     tailwind.config = {
       darkMode: 'class',
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] },
+          fontFamily: { sans: ['Poppins', 'system-ui', 'sans-serif'] },
           colors: {
             covibe: {
               navy: '#003058',
@@ -33,276 +34,295 @@
       }
     };
   </script>
-    <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
-<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-200">
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
 
-  <!-- ==================== SIGN-IN SCREEN ==================== -->
-  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-covibe-navyDark via-covibe-navy to-covibe-tealDark">
-    <div class="w-full max-w-[420px] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-white/15 overflow-hidden">
-      <div class="bg-white px-8 pt-8 pb-6 border-b border-slate-100 text-center">
-        <img src="img/covibe-logo.png" alt="CoVibe Coworking Space" class="h-12 w-auto mx-auto object-contain" />
-        <h1 class="mt-4 text-xl font-extrabold text-covibe-navy tracking-tight">Attendance Portal</h1>
-        <p class="text-xs text-slate-500 mt-1">Sign in with your Admin or Client account</p>
+  <!-- Sign In Screen -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-5 bg-gradient-to-br from-covibe-navyDark via-covibe-navy to-covibe-tealDark">
+    <div class="w-full max-w-[460px] bg-white dark:bg-slate-900 rounded-3xl shadow-2xl border border-white/15 overflow-hidden">
+      <div class="bg-white px-8 pt-9 pb-7 border-b border-slate-100 text-center">
+        <img src="img/covibe-logo.png" alt="CoVibe Coworking Space" class="h-14 w-auto mx-auto object-contain" />
+        <h1 class="mt-4 text-2xl font-bold text-covibe-navy tracking-tight">Attendance Portal</h1>
+        <p class="text-sm text-slate-500 mt-1">Sign in with your Admin or Client account</p>
       </div>
 
       <div class="p-8 space-y-5">
-        <div id="loginError" class="hidden p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold"></div>
+        <div id="loginError" class="hidden p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-semibold"></div>
 
         <form id="loginForm" class="space-y-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Username</label>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Username</label>
             <div class="relative">
               <i data-lucide="user" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-              <input type="text" id="loginUsername" required autocomplete="username" placeholder="Enter username" class="w-full pl-10 pr-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 focus:border-covibe-teal focus:bg-white dark:focus:bg-slate-900 outline-none transition" />
+              <input type="text" id="loginUsername" required autocomplete="username" placeholder="Enter username" class="w-full pl-10 pr-4 py-3 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 focus:border-covibe-teal focus:bg-white dark:focus:bg-slate-900 outline-none transition" />
             </div>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-600 dark:text-slate-300 mb-1.5">Password</label>
+            <label class="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Password</label>
             <div class="relative">
               <i data-lucide="lock" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
-              <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="Enter password" class="w-full pl-10 pr-3.5 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 focus:border-covibe-teal focus:bg-white dark:focus:bg-slate-900 outline-none transition" />
+              <input type="password" id="loginPassword" required autocomplete="current-password" placeholder="Enter password" class="w-full pl-10 pr-4 py-3 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 focus:border-covibe-teal focus:bg-white dark:focus:bg-slate-900 outline-none transition" />
             </div>
           </div>
-          <button type="submit" class="w-full py-3 rounded-xl bg-covibe-navy hover:bg-covibe-navyDark text-white font-bold text-sm shadow-lg shadow-covibe-navy/25 transition flex items-center justify-center gap-2">
-            <i data-lucide="log-in" class="w-4 h-4 text-covibe-orange"></i>
+          <button type="submit" class="w-full py-3.5 rounded-xl bg-covibe-navy hover:bg-covibe-navyDark text-white font-bold text-base shadow-lg shadow-covibe-navy/25 transition flex items-center justify-center gap-2">
+            <i data-lucide="log-in" class="w-5 h-5 text-covibe-orange"></i>
             <span>Sign In</span>
           </button>
         </form>
-
-        <div class="pt-4 border-t border-slate-100 dark:border-slate-800 text-center space-y-1.5">
-          <div class="text-[11px] text-slate-500">
-            Admins: <code class="font-mono font-semibold text-covibe-navy dark:text-sky-300">admin1</code> / <code class="font-mono font-semibold text-covibe-navy dark:text-sky-300">covibe@2026</code> • <code class="font-mono font-semibold text-covibe-navy dark:text-sky-300">admin2</code> / <code class="font-mono font-semibold text-covibe-navy dark:text-sky-300">covibe@2027</code>
-          </div>
-          <div class="text-[11px] text-slate-500">
-            Clients: <code class="font-mono font-semibold text-covibe-teal">client1</code>–<code class="font-mono font-semibold text-covibe-teal">client4</code> (<code class="font-mono">client1@2026</code> … <code class="font-mono">client4@2026</code>)
-          </div>
-        </div>
       </div>
     </div>
   </div>
 
-  <!-- ==================== APP SHELL ==================== -->
-  <div id="appShell" class="hidden">
-    <!-- Top Header -->
-    <header class="bg-covibe-navy dark:bg-slate-900 text-white border-b border-covibe-teal/30 sticky top-0 z-30 shadow-md no-print">
-      <div class="max-w-[1380px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3 flex-wrap">
-        <div class="flex items-center gap-3.5 min-w-0">
-          <div class="bg-white rounded-xl px-2.5 py-1.5 shadow-sm shrink-0">
-            <img src="img/covibe-logo.png" alt="CoVibe" class="h-7 w-auto object-contain" />
+  <!-- App Shell -->
+  <div id="appShell" class="hidden flex-1 flex flex-col">
+    <!-- Larger Executive Header & Navigation Bar -->
+    <header class="bg-covibe-navy dark:bg-slate-900 text-white border-b border-covibe-teal/30 sticky top-0 z-30 shadow-lg no-print">
+      <div class="max-w-[1440px] mx-auto px-5 sm:px-8 py-4 flex items-center justify-between gap-4 flex-wrap">
+        <div class="flex items-center gap-4 min-w-0">
+          <div class="bg-white rounded-2xl px-3.5 py-2 shadow-sm shrink-0">
+            <img src="img/covibe-logo.png" alt="CoVibe" class="h-10 w-auto object-contain" />
           </div>
           <div class="min-w-0">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-sm sm:text-base font-extrabold tracking-tight">Attendance Portal</span>
-              <span id="roleBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-covibe-teal/25 text-teal-200 border border-covibe-teal/50">ADMIN</span>
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <span class="text-lg sm:text-xl font-bold tracking-tight">Attendance Portal</span>
+              <span id="roleBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-covibe-teal/25 text-teal-200 border border-covibe-teal/50">ADMIN</span>
             </div>
-            <p class="text-[11px] text-slate-300 hidden sm:block">Face (15) = Check-In Login • Fingerprint (1) = Check-Out Logout</p>
+            <p class="text-xs sm:text-sm text-slate-300 hidden sm:block mt-0.5">Day Shift 7 AM to 7 PM and Night Shift 7 PM to 7 AM</p>
           </div>
         </div>
 
-        <div class="flex items-center gap-2 flex-wrap">
-          <button id="btnTopUpload" class="admin-only inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-covibe-teal hover:bg-covibe-tealDark text-white font-semibold text-xs transition shadow-sm">
-            <i data-lucide="upload" class="w-3.5 h-3.5"></i>
-            <span>Upload File</span>
+        <div class="flex items-center gap-3 flex-wrap">
+          <button id="btnTopExport" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-covibe-teal hover:bg-covibe-tealDark text-white font-semibold text-sm transition shadow-sm">
+            <i data-lucide="download" class="w-4 h-4"></i>
+            <span>Export Excel</span>
           </button>
 
-          <button id="btnTopExport" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs transition">
-            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-            <span class="hidden sm:inline">Export Excel</span>
-          </button>
-
-          <div class="flex items-center gap-2.5 pl-3 pr-1.5 py-1 rounded-xl bg-covibe-navyDark border border-white/15">
+          <div class="flex items-center gap-3 pl-4 pr-2 py-1.5 rounded-xl bg-covibe-navyDark border border-white/15">
             <div class="text-right leading-tight hidden sm:block">
-              <div id="hdrUser" class="text-[11px] font-bold text-white">admin1</div>
-              <div id="hdrCompany" class="text-[10px] text-teal-300">CoVibe Ops</div>
+              <div id="hdrUser" class="text-sm font-bold text-white">admin1</div>
+              <div id="hdrCompany" class="text-xs text-teal-300">CoVibe Ops</div>
             </div>
-            <button id="btnLogout" class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-covibe-orange hover:bg-covibe-orangeDark text-white text-[11px] font-bold transition">
-              <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+            <button id="btnLogout" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-covibe-orange hover:bg-covibe-orangeDark text-white text-xs font-bold transition">
+              <i data-lucide="log-out" class="w-4 h-4"></i>
               <span>Sign Out</span>
             </button>
           </div>
 
-          <button id="btnThemeToggle" title="Toggle Dark/Light Mode" class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition">
-            <i data-lucide="moon" class="w-4 h-4"></i>
+          <button id="btnThemeToggle" title="Switch Theme" class="p-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition">
+            <i data-lucide="moon" class="w-5 h-5"></i>
           </button>
         </div>
       </div>
 
-      <!-- Streamlined Navigation -->
+      <!-- Spacious Navigation Bar -->
       <div class="bg-covibe-navyDark dark:bg-slate-950/90 border-t border-white/10">
-        <div class="max-w-[1380px] mx-auto px-4 sm:px-6 flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2" id="mainNav">
-          <button data-tab="overview" class="nav-btn active inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition bg-covibe-teal text-white shadow-sm">
-            <i data-lucide="layout-dashboard" class="w-3.5 h-3.5"></i> Overview
+        <div class="max-w-[1440px] mx-auto px-5 sm:px-8 flex items-center gap-2 overflow-x-auto no-scrollbar py-3" id="mainNav">
+          <button data-tab="overview" class="nav-btn active inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition bg-covibe-teal text-white shadow-sm">
+            <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Overview
           </button>
-          <button data-tab="daily" class="nav-btn inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition text-slate-200 hover:bg-white/10">
-            <i data-lucide="calendar-clock" class="w-3.5 h-3.5"></i> Daily Report
+          <button data-tab="daily" class="nav-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition text-slate-200 hover:bg-white/10">
+            <i data-lucide="calendar-clock" class="w-4 h-4"></i> Daily Report
           </button>
-          <button data-tab="punches" class="nav-btn inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition text-slate-200 hover:bg-white/10">
-            <i data-lucide="list-checks" class="w-3.5 h-3.5"></i> Punch Logs
+          <button data-tab="punches" class="nav-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition text-slate-200 hover:bg-white/10">
+            <i data-lucide="list-checks" class="w-4 h-4"></i> Punch Logs
           </button>
-          <button data-tab="employees" class="nav-btn inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition text-slate-200 hover:bg-white/10">
-            <i data-lucide="users" class="w-3.5 h-3.5"></i> Employees
+          <button data-tab="employees" class="nav-btn inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition text-slate-200 hover:bg-white/10">
+            <i data-lucide="users" class="w-4 h-4"></i> Employees
           </button>
-          <button data-tab="upload" class="nav-btn admin-only inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition text-slate-200 hover:bg-white/10">
-            <i data-lucide="folder-up" class="w-3.5 h-3.5"></i> Upload & Accounts
+          <button data-tab="upload" class="nav-btn admin-only inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition text-slate-200 hover:bg-white/10">
+            <i data-lucide="key-round" class="w-4 h-4"></i> Accounts
           </button>
         </div>
       </div>
     </header>
 
+
+    <!-- Global Report Period Navigation Filter -->
+    <div class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm no-print">
+      <div class="max-w-[1440px] mx-auto px-5 sm:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2 flex-wrap" id="periodNav">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500 mr-1">Report Period:</span>
+          <button data-period="all" class="period-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-covibe-navy text-white shadow-sm">All Data</button>
+          <button data-period="last-week" class="period-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200">Last Week Report</button>
+          <button data-period="last-month" class="period-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200">Last Month Report</button>
+          <button data-period="custom" class="period-btn px-4 py-2 rounded-xl text-sm font-semibold transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200">Custom Period</button>
+        </div>
+        <div id="customPeriodInputs" class="hidden flex items-center gap-2 flex-wrap">
+          <label class="text-xs font-semibold text-slate-500">From</label>
+          <input type="date" id="gFrom" class="px-3 py-1.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950" />
+          <label class="text-xs font-semibold text-slate-500">To</label>
+          <input type="date" id="gTo" class="px-3 py-1.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950" />
+          <button id="btnApplyCustomPeriod" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-covibe-teal hover:bg-covibe-tealDark text-white transition">Apply</button>
+        </div>
+        <div id="activePeriodBadge" class="text-xs font-semibold text-covibe-tealDark dark:text-teal-300 bg-covibe-tealSoft dark:bg-teal-950/60 px-3 py-1.5 rounded-xl">Showing All Data</div>
+      </div>
+    </div>
+
     <!-- Client Privacy Strip -->
-    <div id="clientBanner" class="hidden bg-gradient-to-r from-covibe-teal to-covibe-navy text-white px-4 sm:px-6 py-2 no-print">
-      <div class="max-w-[1380px] mx-auto flex items-center justify-between gap-2 text-xs">
+    <div id="clientBanner" class="hidden bg-gradient-to-r from-covibe-teal to-covibe-navy text-white px-5 sm:px-8 py-2.5 no-print">
+      <div class="max-w-[1440px] mx-auto flex items-center justify-between gap-2 text-sm">
         <div class="flex items-center gap-2">
           <i data-lucide="shield-check" class="w-4 h-4 text-covibe-orange shrink-0"></i>
-          <span id="clientBannerText" class="font-medium">Client Portal — Showing your company's attendance with masked employee names (Na####r).</span>
+          <span id="clientBannerText" class="font-medium">Client Portal Read Only View with masked employee names</span>
         </div>
       </div>
     </div>
 
-    <main class="max-w-[1380px] mx-auto px-4 sm:px-6 py-6 space-y-6">
+    <main class="max-w-[1440px] w-full mx-auto px-5 sm:px-8 py-7 space-y-6 flex-1">
 
-      <!-- ==================== TAB 1: OVERVIEW ==================== -->
+      <!-- Tab 1: Overview -->
       <section id="tab-overview" class="tab-panel space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 id="overviewTitle" class="text-lg font-extrabold text-covibe-navy dark:text-white tracking-tight">Attendance Overview</h2>
-            <p class="text-xs text-slate-500 mt-0.5">First Face scan (15) = Login • Last Fingerprint scan (1) = Logout • File-based records</p>
+            <h2 id="overviewTitle" class="text-xl font-bold text-covibe-navy dark:text-white tracking-tight">Attendance Overview</h2>
+            <p class="text-sm text-slate-500 mt-0.5">First Check In is recorded as Login Time and Last Check Out as Logout Time</p>
           </div>
-          <div class="flex items-center gap-2 flex-wrap no-print">
-            <select id="ovClientFilter" class="admin-only px-3 py-2 rounded-xl text-xs font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-              <option value="">All 4 Client Companies</option>
+          <div class="flex items-center gap-2.5 flex-wrap no-print">
+            <select id="ovClientFilter" class="admin-only px-3.5 py-2.5 rounded-xl text-sm font-semibold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+              <option value="">All Client Companies</option>
             </select>
-            <button id="btnPrint" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-covibe-teal transition">
-              <i data-lucide="printer" class="w-3.5 h-3.5"></i> Print
+            <button id="btnPrint" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:border-covibe-teal transition">
+              <i data-lucide="printer" class="w-4 h-4"></i> Print
             </button>
           </div>
         </div>
 
-        <!-- 4 Clean Executive KPI Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden">
-            <div class="absolute top-0 left-0 right-0 h-1 bg-covibe-navy"></div>
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-covibe-navy"></div>
             <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-500">Total Uploaded Scans</span>
-              <span class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-covibe-navy dark:text-sky-300 flex items-center justify-center"><i data-lucide="file-text" class="w-4 h-4"></i></span>
+              <span class="text-sm font-semibold text-slate-500">Total Records</span>
+              <span class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-covibe-navy dark:text-sky-300 flex items-center justify-center"><i data-lucide="file-text" class="w-5 h-5"></i></span>
             </div>
-            <div id="kpiScans" class="text-3xl font-extrabold text-covibe-navy dark:text-white mt-3">0</div>
-            <div id="kpiScansSub" class="text-xs text-slate-500 mt-1">0 Face IN • 0 Finger OUT</div>
+            <div id="kpiScans" class="text-3xl sm:text-4xl font-extrabold text-covibe-navy dark:text-white mt-3">0</div>
+            <div id="kpiScansSub" class="text-xs sm:text-sm text-slate-500 mt-1.5">0 Check In and 0 Check Out</div>
           </div>
 
-          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden">
-            <div class="absolute top-0 left-0 right-0 h-1 bg-covibe-teal"></div>
+          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-covibe-teal"></div>
             <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-500">Face Check-Ins</span>
-              <span class="w-8 h-8 rounded-xl bg-covibe-tealSoft text-covibe-teal flex items-center justify-center"><i data-lucide="scan-face" class="w-4 h-4"></i></span>
+              <span class="text-sm font-semibold text-slate-500">Total Check In Shifts</span>
+              <span class="w-10 h-10 rounded-xl bg-covibe-tealSoft text-covibe-teal flex items-center justify-center"><i data-lucide="log-in" class="w-5 h-5"></i></span>
             </div>
-            <div id="kpiFaceIn" class="text-3xl font-extrabold text-covibe-teal mt-3">0</div>
-            <div id="kpiFaceSub" class="text-xs text-slate-500 mt-1">Unique employee-days logged in</div>
+            <div id="kpiFaceIn" class="text-3xl sm:text-4xl font-extrabold text-covibe-teal mt-3">0</div>
+            <div id="kpiFaceSub" class="text-xs sm:text-sm text-slate-500 mt-1.5">0 Day and 0 Night Shifts</div>
           </div>
 
-          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden">
-            <div class="absolute top-0 left-0 right-0 h-1 bg-covibe-orange"></div>
+          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-covibe-orange"></div>
             <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-500">Fingerprint Check-Outs</span>
-              <span class="w-8 h-8 rounded-xl bg-covibe-orangeSoft text-covibe-orange flex items-center justify-center"><i data-lucide="fingerprint" class="w-4 h-4"></i></span>
+              <span class="text-sm font-semibold text-slate-500">Completed Shifts</span>
+              <span class="w-10 h-10 rounded-xl bg-covibe-orangeSoft text-covibe-orange flex items-center justify-center"><i data-lucide="log-out" class="w-5 h-5"></i></span>
             </div>
-            <div id="kpiFingerOut" class="text-3xl font-extrabold text-covibe-orange mt-3">0</div>
-            <div id="kpiFingerSub" class="text-xs text-slate-500 mt-1">Completed login-logout days</div>
+            <div id="kpiFingerOut" class="text-3xl sm:text-4xl font-extrabold text-covibe-orange mt-3">0</div>
+            <div id="kpiFingerSub" class="text-xs sm:text-sm text-slate-500 mt-1.5">Login and Logout paired</div>
           </div>
 
-          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm relative overflow-hidden">
-            <div class="absolute top-0 left-0 right-0 h-1 bg-covibe-navyLight"></div>
+          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-covibe-navyLight"></div>
             <div class="flex items-center justify-between">
-              <span class="text-xs font-semibold text-slate-500">Active Employees</span>
-              <span class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-covibe-navyLight dark:text-sky-300 flex items-center justify-center"><i data-lucide="users" class="w-4 h-4"></i></span>
+              <span class="text-sm font-semibold text-slate-500">Active Employees</span>
+              <span class="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/60 text-covibe-navyLight dark:text-sky-300 flex items-center justify-center"><i data-lucide="users" class="w-5 h-5"></i></span>
             </div>
-            <div id="kpiEmps" class="text-3xl font-extrabold text-covibe-navy dark:text-white mt-3">0</div>
-            <div id="kpiAvgSpan" class="text-xs text-covibe-teal font-semibold mt-1">Avg span: 0h 0m</div>
+            <div id="kpiEmps" class="text-3xl sm:text-4xl font-extrabold text-covibe-navy dark:text-white mt-3">0</div>
+            <div id="kpiAvgSpan" class="text-xs sm:text-sm text-covibe-teal font-semibold mt-1.5">Avg span: 0h 0m</div>
           </div>
         </div>
 
-        <!-- 2 Clean Charts -->
+        <!-- Charts -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
             <div class="mb-4">
-              <h3 class="text-sm font-bold text-covibe-navy dark:text-white">Daily Attendance by Shift</h3>
-              <p class="text-xs text-slate-500">Day Shift (7 AM–7 PM) vs. Night Shift (7 PM–7 AM)</p>
+              <h3 class="text-base font-bold text-covibe-navy dark:text-white">Daily Attendance by Shift</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Day Shift 7 AM to 7 PM vs Night Shift 7 PM to 7 AM</p>
             </div>
             <div class="relative h-64"><canvas id="dailyChart"></canvas></div>
           </div>
 
-          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
             <div class="mb-4">
-              <h3 class="text-sm font-bold text-covibe-navy dark:text-white">Hourly Check-In vs. Check-Out Flow</h3>
-              <p class="text-xs text-slate-500">Face Check-In (Teal) vs. Fingerprint Check-Out (Orange)</p>
+              <h3 class="text-base font-bold text-covibe-navy dark:text-white">Hourly Check In vs Check Out Flow</h3>
+              <p class="text-xs sm:text-sm text-slate-500">Check In activity (Teal) vs Check Out activity (Orange)</p>
             </div>
             <div class="relative h-64"><canvas id="hourlyChart"></canvas></div>
           </div>
         </div>
       </section>
 
-      <!-- ==================== TAB 2: DAILY REPORT ==================== -->
-      <section id="tab-daily" class="tab-panel hidden space-y-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <!-- Tab 2: Daily Report -->
+      <section id="tab-daily" class="tab-panel hidden space-y-5">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 class="text-base font-extrabold text-covibe-navy dark:text-white">Daily Login & Logout Report</h2>
-              <p class="text-xs text-slate-500">Day Shift (7 AM–7 PM) & Night Shift (7 PM–7 AM) • First Face (15) = Login • Last Fingerprint (1) = Logout (cross-midnight paired)</p>
+              <h2 class="text-lg font-bold text-covibe-navy dark:text-white">Daily Login and Logout Report</h2>
+              <p class="text-sm text-slate-500">Day Shift 7 AM to 7 PM and Night Shift 7 PM to 7 AM. Click any row to view all timestamps.</p>
             </div>
-            <div class="flex items-center gap-2 no-print">
-              <button data-export="daily-csv" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-covibe-teal hover:bg-covibe-tealDark text-white transition">Export CSV</button>
-              <button data-export="daily-xlsx" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-covibe-navy hover:bg-covibe-navyDark text-white transition">Export Excel</button>
+            <div class="flex items-center gap-2.5 no-print">
+              <button data-export="daily-csv" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-covibe-teal hover:bg-covibe-tealDark text-white transition">Export CSV</button>
+              <button data-export="daily-xlsx" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-covibe-navy hover:bg-covibe-navyDark text-white transition">Export Excel</button>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 no-print">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3.5 no-print">
             <div>
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1">From Date</label>
-              <input type="date" id="dFrom" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
+              <label class="block text-xs font-semibold text-slate-500 mb-1">From Date</label>
+              <input type="date" id="dFrom" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1">To Date</label>
-              <input type="date" id="dTo" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
+              <label class="block text-xs font-semibold text-slate-500 mb-1">To Date</label>
+              <input type="date" id="dTo" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1">Employee ID / Name</label>
-              <input type="text" id="dSearch" placeholder="Search ID or name..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Employee ID or Name</label>
+              <input type="text" id="dSearch" placeholder="Search ID or name" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
             </div>
             <div class="admin-only">
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1">Client Company</label>
-              <select id="dClient" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Client Company</label>
+              <select id="dClient" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
                 <option value="">All Clients</option>
               </select>
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1">Shift</label>
-              <select id="dShift" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
-                <option value="">All Shifts (Day & Night)</option>
-                <option value="Day">Day Shift (7 AM–7 PM)</option>
-                <option value="Night">Night Shift (7 PM–7 AM)</option>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Shift</label>
+              <select id="dShift" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
+                <option value="">All Shifts</option>
+                <option value="Day">Day Shift (7 AM to 7 PM)</option>
+                <option value="Night">Night Shift (7 PM to 7 AM)</option>
               </select>
             </div>
             <div class="flex items-end">
-              <button id="btnDailyClear" class="w-full px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition">Clear Filters</button>
+              <button id="btnDailyClear" class="w-full px-3 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition">Clear Filters</button>
             </div>
           </div>
 
-          <div id="dailyCount" class="text-xs font-medium text-slate-500">0 daily records</div>
+          <div class="flex flex-wrap items-center justify-between gap-2 text-sm text-slate-500">
+            <span id="dailyCount" class="font-medium">0 daily records</span>
+            <div class="flex items-center gap-2 no-print">
+              <label class="text-xs font-semibold">Show:</label>
+              <select id="dPageSize" class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
+                <option value="all" selected>All Rows</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+                <option value="250">250</option>
+              </select>
+            </div>
+          </div>
 
           <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-800/70 text-slate-700 dark:text-slate-200 font-semibold border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th class="px-3.5 py-3">Employee ID</th>
-                  <th class="px-3.5 py-3">Employee</th>
-                  <th class="px-3.5 py-3">Client</th>
-                  <th class="px-3.5 py-3">Date</th>
-                  <th class="px-3.5 py-3">Shift</th>
-                  <th class="px-3.5 py-3 text-covibe-tealDark dark:text-teal-300">Login (1st Face)</th>
-                  <th class="px-3.5 py-3 text-covibe-orangeDark dark:text-orange-300">Logout (Last Finger)</th>
-                  <th class="px-3.5 py-3 text-center">IN / OUT</th>
-                  <th class="px-3.5 py-3">Total Span</th>
+                  <th class="px-4 py-3.5">Employee ID</th>
+                  <th class="px-4 py-3.5">Employee</th>
+                  <th class="px-4 py-3.5">Client</th>
+                  <th class="px-4 py-3.5">Date</th>
+                  <th class="px-4 py-3.5">Shift</th>
+                  <th class="px-4 py-3.5 text-covibe-tealDark dark:text-teal-300">Login Time</th>
+                  <th class="px-4 py-3.5 text-covibe-orangeDark dark:text-orange-300">Logout Time</th>
+                  <th class="px-4 py-3.5 text-center">In / Out</th>
+                  <th class="px-4 py-3.5">Total Span</th>
                 </tr>
               </thead>
               <tbody id="dailyBody" class="divide-y divide-slate-100 dark:divide-slate-800/80"></tbody>
@@ -311,66 +331,72 @@
         </div>
       </section>
 
-      <!-- ==================== TAB 3: PUNCH LOGS ==================== -->
-      <section id="tab-punches" class="tab-panel hidden space-y-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+      <!-- Tab 3: Punch Logs -->
+      <section id="tab-punches" class="tab-panel hidden space-y-5">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-5">
           <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h2 class="text-base font-extrabold text-covibe-navy dark:text-white">Biometric Punch Logs</h2>
-              <p class="text-xs text-slate-500">Column 5 biometric mode: 15 = Face Check-In • 1 = Fingerprint Check-Out • 4 = RFID Card</p>
+              <h2 class="text-lg font-bold text-covibe-navy dark:text-white">Attendance Punch Logs</h2>
+              <p class="text-sm text-slate-500">Complete Check In and Check Out records</p>
             </div>
-            <div class="flex items-center gap-2 no-print">
-              <button data-export="punches-csv" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-covibe-teal hover:bg-covibe-tealDark text-white transition">Export CSV</button>
-              <button data-export="punches-xlsx" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-covibe-navy hover:bg-covibe-navyDark text-white transition">Export Excel</button>
+            <div class="flex items-center gap-2.5 no-print">
+              <button data-export="punches-csv" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-covibe-teal hover:bg-covibe-tealDark text-white transition">Export CSV</button>
+              <button data-export="punches-xlsx" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-covibe-navy hover:bg-covibe-navyDark text-white transition">Export Excel</button>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 no-print">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5 no-print">
             <div>
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1">Employee ID / Name</label>
-              <input type="text" id="pSearch" placeholder="Search ID or name..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Employee ID or Name</label>
+              <input type="text" id="pSearch" placeholder="Search ID or name" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1">From Date</label>
-              <input type="date" id="pFrom" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
+              <label class="block text-xs font-semibold text-slate-500 mb-1">From Date</label>
+              <input type="date" id="pFrom" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1">To Date</label>
-              <input type="date" id="pTo" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
+              <label class="block text-xs font-semibold text-slate-500 mb-1">To Date</label>
+              <input type="date" id="pTo" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-500 mb-1">Biometric Mode</label>
-              <select id="pMode" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
-                <option value="">All Modes</option>
-                <option value="15">15 — Face Check-In</option>
-                <option value="1">1 — Fingerprint Check-Out</option>
-                <option value="4">4 — RFID Card</option>
+              <label class="block text-xs font-semibold text-slate-500 mb-1">Event Type</label>
+              <select id="pMode" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
+                <option value="">All Events</option>
+                <option value="15">Check In</option>
+                <option value="1">Check Out</option>
               </select>
             </div>
             <div class="flex items-end">
-              <button id="btnPunchClear" class="w-full px-3 py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition">Clear Filters</button>
+              <button id="btnPunchClear" class="w-full px-3 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition">Clear Filters</button>
             </div>
           </div>
 
-          <div class="flex items-center justify-between text-xs text-slate-500">
-            <span id="punchCount">0 scans</span>
-            <div class="flex items-center gap-2">
-              <button id="btnPrevPage" class="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40">Prev</button>
-              <span id="pageInfo">Page 1 / 1</span>
-              <button id="btnNextPage" class="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40">Next</button>
+          <div class="flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500">
+            <span id="punchCount" class="font-medium">0 records</span>
+            <div class="flex items-center gap-3">
+              <select id="pPageSize" class="px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
+                <option value="50">50 per page</option>
+                <option value="100" selected>100 per page</option>
+                <option value="250">250 per page</option>
+                <option value="all">Show All</option>
+              </select>
+              <div class="flex items-center gap-2">
+                <button id="btnPrevPage" class="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40 text-xs font-semibold">Prev</button>
+                <span id="pageInfo" class="text-xs font-semibold">Page 1 / 1</span>
+                <button id="btnNextPage" class="px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700 disabled:opacity-40 text-xs font-semibold">Next</button>
+              </div>
             </div>
           </div>
 
           <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-800/70 text-slate-700 dark:text-slate-200 font-semibold border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th class="px-3.5 py-3">Employee ID</th>
-                  <th class="px-3.5 py-3">Employee</th>
-                  <th class="px-3.5 py-3">Client</th>
-                  <th class="px-3.5 py-3">Date & Time</th>
-                  <th class="px-3.5 py-3">Biometric Direction</th>
-                  <th class="px-3.5 py-3">Source File</th>
+                  <th class="px-4 py-3.5">Employee ID</th>
+                  <th class="px-4 py-3.5">Employee</th>
+                  <th class="px-4 py-3.5">Client</th>
+                  <th class="px-4 py-3.5">Date and Time</th>
+                  <th class="px-4 py-3.5">Event</th>
                 </tr>
               </thead>
               <tbody id="punchBody" class="divide-y divide-slate-100 dark:divide-slate-800/80"></tbody>
@@ -379,67 +405,62 @@
         </div>
       </section>
 
-      <!-- ==================== TAB 4: EMPLOYEES ==================== -->
-      <section id="tab-employees" class="tab-panel hidden space-y-4">
+      <!-- Tab 4: Employees -->
+      <section id="tab-employees" class="tab-panel hidden space-y-5">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-          <!-- Admin Add/Edit Employee -->
-          <div class="admin-only bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4 h-fit">
+          <div class="admin-only bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4 h-fit">
             <div>
-              <h2 id="empFormTitle" class="text-base font-extrabold text-covibe-navy dark:text-white">Add / Edit Employee</h2>
-              <p class="text-xs text-slate-500">Assign each employee ID to one of the 4 Client Companies</p>
+              <h2 id="empFormTitle" class="text-lg font-bold text-covibe-navy dark:text-white">Edit Employee</h2>
+              <p class="text-xs sm:text-sm text-slate-500">Assign employees to Client Companies</p>
             </div>
-            <form id="empForm" class="space-y-3">
+            <form id="empForm" class="space-y-3.5">
               <div>
-                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Biometric ID *</label>
-                <input type="text" id="empId" required placeholder="e.g. C0001 or 135" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Employee ID *</label>
+                <input type="text" id="empId" required placeholder="e.g. C0001 or 135" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Full Name * <span class="font-normal text-covibe-teal">(masked as Na####r for clients)</span></label>
-                <input type="text" id="empName" required placeholder="Employee full name" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Full Name *</label>
+                <input type="text" id="empName" required placeholder="Employee full name" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Client Company</label>
-                <select id="empClient" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950"></select>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Client Company</label>
+                <select id="empClient" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950"></select>
               </div>
               <div>
-                <label class="block text-[11px] font-semibold text-slate-500 mb-1">Department</label>
-                <input type="text" id="empDept" placeholder="Optional" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Department</label>
+                <input type="text" id="empDept" placeholder="Optional" class="w-full px-3 py-2.5 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950" />
               </div>
               <div class="flex items-center gap-2 pt-1">
-                <button type="submit" id="btnSaveEmp" class="flex-1 py-2.5 rounded-xl text-xs font-bold bg-covibe-teal hover:bg-covibe-tealDark text-white transition">Save Employee</button>
-                <button type="button" id="btnResetEmp" class="px-3.5 py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition">Clear</button>
+                <button type="submit" id="btnSaveEmp" class="flex-1 py-2.5 rounded-xl text-sm font-bold bg-covibe-teal hover:bg-covibe-tealDark text-white transition">Save Employee</button>
+                <button type="button" id="btnResetEmp" class="px-4 py-2.5 rounded-xl text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition">Clear</button>
               </div>
             </form>
-            <div class="border-t border-slate-100 dark:border-slate-800 pt-3">
-              <button id="btnGenPlaceholders" class="w-full py-2 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition">Generate Placeholders for Unmapped IDs</button>
-            </div>
           </div>
 
-          <!-- Directory Table -->
-          <div id="empTableWrap" class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+          <div id="empTableWrap" class="lg:col-span-2 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
             <div class="flex flex-wrap items-center justify-between gap-2">
-              <div class="flex items-center gap-2">
-                <h2 class="text-base font-extrabold text-covibe-navy dark:text-white">Employee Directory</h2>
-                <span id="empCount" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-covibe-tealSoft text-covibe-tealDark">0</span>
+              <div class="flex items-center gap-2.5">
+                <h2 class="text-lg font-bold text-covibe-navy dark:text-white">Employee Directory</h2>
+                <span id="empCount" class="px-3 py-0.5 rounded-full text-xs font-bold bg-covibe-tealSoft text-covibe-tealDark">0</span>
               </div>
               <div class="flex items-center gap-2 flex-wrap">
-                <input type="text" id="empSearch" placeholder="Search ID or name..." class="px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 w-44" />
-                <select id="empFilterClient" class="admin-only px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
+                <input type="text" id="empSearch" placeholder="Search ID or name" class="px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 w-48" />
+                <select id="empFilterClient" class="admin-only px-3 py-2 text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950">
                   <option value="">All Clients</option>
                 </select>
-                <button data-export="employees-xlsx" class="px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition">Excel</button>
+                <button data-export="employees-xlsx" class="px-3.5 py-2 rounded-xl text-sm font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 transition">Excel</button>
               </div>
             </div>
 
             <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
-              <table class="w-full text-left border-collapse text-xs">
-                <thead class="bg-slate-50 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
+              <table class="w-full text-left border-collapse text-sm">
+                <thead class="bg-slate-50 dark:bg-slate-800/70 text-slate-700 dark:text-slate-200 font-semibold border-b border-slate-200 dark:border-slate-800">
                   <tr>
-                    <th class="px-3.5 py-3">ID</th>
-                    <th class="px-3.5 py-3">Employee Name</th>
-                    <th class="px-3.5 py-3">Client Masked View</th>
-                    <th class="px-3.5 py-3">Client Company</th>
-                    <th class="px-3.5 py-3 text-right admin-only">Actions</th>
+                    <th class="px-4 py-3.5">ID</th>
+                    <th class="px-4 py-3.5">Employee Name</th>
+                    <th class="px-4 py-3.5">Client Masked View</th>
+                    <th class="px-4 py-3.5">Client Company</th>
+                    <th class="px-4 py-3.5 text-right admin-only">Actions</th>
                   </tr>
                 </thead>
                 <tbody id="empBody" class="divide-y divide-slate-100 dark:divide-slate-800/80"></tbody>
@@ -449,65 +470,24 @@
         </div>
       </section>
 
-      <!-- ==================== TAB 5: UPLOAD & ACCOUNTS (ADMIN ONLY) ==================== -->
-      <section id="tab-upload" class="tab-panel hidden space-y-6">
-        <!-- Manual File Uploads -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-covibe-tealSoft text-covibe-teal flex items-center justify-center"><i data-lucide="file-up" class="w-5 h-5"></i></div>
-              <div>
-                <h2 class="text-base font-extrabold text-covibe-navy dark:text-white">Upload Attendance File</h2>
-                <p class="text-xs text-slate-500">Reads eSSL <code class="text-covibe-teal font-semibold">.dat</code> (Col 5: 15=Face IN, 1=Finger OUT), <code class="text-covibe-teal">.csv</code>, <code class="text-covibe-teal">.xlsx</code>, <code class="text-covibe-teal">.json</code></p>
-              </div>
-            </div>
-            <label id="attDropZone" class="block border-2 border-dashed border-covibe-teal/60 rounded-2xl p-7 text-center bg-covibe-tealSoft/30 hover:bg-covibe-tealSoft/60 transition cursor-pointer">
-              <i data-lucide="cloud-upload" class="w-8 h-8 text-covibe-teal mx-auto mb-2"></i>
-              <div class="text-xs font-bold text-covibe-navy dark:text-white">Click or drop attendance file here</div>
-              <div class="text-[11px] text-slate-500 mt-1">Duplicates are automatically skipped</div>
-              <input type="file" id="attFileInput" accept=".dat,.txt,.csv,.tsv,.xlsx,.xls,.json" class="hidden" />
-            </label>
-          </div>
-
-          <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-covibe-orangeSoft text-covibe-orange flex items-center justify-center"><i data-lucide="user-plus" class="w-5 h-5"></i></div>
-              <div>
-                <h2 class="text-base font-extrabold text-covibe-navy dark:text-white">Upload Users / Employees File</h2>
-                <p class="text-xs text-slate-500">Reads binary eSSL <code class="text-covibe-orange font-semibold">user.dat</code>, <code class="text-covibe-orange">.csv</code>, <code class="text-covibe-orange">.xlsx</code>, or <code class="text-covibe-orange">.json</code></p>
-              </div>
-            </div>
-            <label id="userDropZone" class="block border-2 border-dashed border-covibe-orange/60 rounded-2xl p-7 text-center bg-covibe-orangeSoft/30 hover:bg-covibe-orangeSoft/60 transition cursor-pointer">
-              <i data-lucide="file-key-2" class="w-8 h-8 text-covibe-orange mx-auto mb-2"></i>
-              <div class="text-xs font-bold text-covibe-navy dark:text-white">Click or drop user.dat / Excel / CSV here</div>
-              <div class="text-[11px] text-slate-500 mt-1">Updates placeholder IDs with real employee names</div>
-              <input type="file" id="userFileInput" accept=".dat,.csv,.tsv,.xlsx,.xls,.json,.txt" class="hidden" />
-            </label>
-          </div>
-        </div>
-
-        <!-- Fixed 2 Admin + 4 Client Accounts Panel -->
-        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 class="text-base font-extrabold text-covibe-navy dark:text-white">Portal Accounts (2 Admins & 4 Clients — File-Based)</h2>
-              <p class="text-xs text-slate-500">Edit company names or passwords below. No database required.</p>
-            </div>
-            <button id="btnClearDataOpen" class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-rose-50 hover:bg-rose-100 text-rose-600 transition">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear Attendance Data
-            </button>
+      <!-- Tab 5: Accounts (Admin Only) -->
+      <section id="tab-upload" class="tab-panel hidden space-y-5">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4">
+          <div>
+            <h2 class="text-lg font-bold text-covibe-navy dark:text-white">Portal Accounts (2 Admins and 4 Clients)</h2>
+            <p class="text-sm text-slate-500">Edit company names or passwords below. Data is loaded directly from bundled attendance files.</p>
           </div>
 
           <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl">
-            <table class="w-full text-left border-collapse text-xs">
-              <thead class="bg-slate-50 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300 font-semibold border-b border-slate-200 dark:border-slate-800">
+            <table class="w-full text-left border-collapse text-sm">
+              <thead class="bg-slate-50 dark:bg-slate-800/70 text-slate-700 dark:text-slate-200 font-semibold border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th class="px-3.5 py-3">Role</th>
-                  <th class="px-3.5 py-3">Username</th>
-                  <th class="px-3.5 py-3">Password</th>
-                  <th class="px-3.5 py-3">Company Code</th>
-                  <th class="px-3.5 py-3">Company Name</th>
-                  <th class="px-3.5 py-3 text-right">Action</th>
+                  <th class="px-4 py-3.5">Role</th>
+                  <th class="px-4 py-3.5">Username</th>
+                  <th class="px-4 py-3.5">Password</th>
+                  <th class="px-4 py-3.5">Company Code</th>
+                  <th class="px-4 py-3.5">Company Name</th>
+                  <th class="px-4 py-3.5 text-right">Action</th>
                 </tr>
               </thead>
               <tbody id="accountsBody" class="divide-y divide-slate-100 dark:divide-slate-800/80"></tbody>
@@ -516,18 +496,16 @@
         </div>
       </section>
     </main>
-  </div>
 
-  <!-- Confirm Clear Modal -->
-  <div id="clearModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 backdrop-blur-sm p-4 no-print">
-    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-sm w-full p-5 shadow-2xl space-y-4">
-      <h3 class="text-base font-bold text-covibe-navy dark:text-white">Clear All Punch Records?</h3>
-      <p class="text-xs text-slate-500">This removes all uploaded punch scans so you can upload a fresh weekly file. Your 2 Admin & 4 Client accounts and employee names stay intact.</p>
-      <div class="flex justify-end gap-2">
-        <button id="btnCancelClear" class="px-3.5 py-2 rounded-xl text-xs font-semibold bg-slate-100 dark:bg-slate-800">Cancel</button>
-        <button id="btnConfirmClear" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white">Clear Punches</button>
+    <!-- Professional Footer with Data Accuracy Disclaimer -->
+    <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 py-5 px-5 sm:px-8">
+      <div class="max-w-[1440px] mx-auto space-y-2 text-center">
+        <p class="text-xs sm:text-sm font-medium text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 rounded-xl px-4 py-2.5 inline-block">
+          <strong>Note:</strong> This attendance data is generated automatically from device logs and may not be 100% accurate. Missed scans or timing errors can occur; please verify important records with CoVibe management before official use.
+        </p>
+        <p class="text-xs text-slate-400">CoVibe Coworking Space Attendance Portal</p>
       </div>
-    </div>
+    </footer>
   </div>
 
   <!-- Toast Container -->

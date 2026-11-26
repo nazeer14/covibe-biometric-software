@@ -1,23 +1,14 @@
-# CoVibe Attendance Portal (Zero-Database, File-Based)
+# CoVibe Attendance Portal
 
-Lightweight Spring Boot 3.5 attendance portal with **zero database setup** — reads and saves manual uploaded files (`.dat`, `user.dat`, `.csv`, `.xlsx`, `.json`) directly to `./data-files/`.
+Zero-database Spring Boot 3.5 attendance portal with multi-file period reports (`All Data`, `Last Week Report`, `Last Month Report`, and `Custom Period`).
 
-## Fixed Accounts (2 Admins & 4 Clients)
-- **Admins** (full upload, employee mapping, account passwords, clear data):
-  - `admin1` / `covibe@2026`
-  - `admin2` / `covibe@2027`
-- **Clients** (read-only, own company only, masked names `Na####r`, no upload or clear options):
-  - `client1` / `client1@2026` (`CL-01`)
-  - `client2` / `client2@2026` (`CL-02`)
-  - `client3` / `client3@2026` (`CL-03`)
-  - `client4` / `client4@2026` (`CL-04`)
+## Bundled Data Files (`src/main/resources/data/`)
+- **`attendance.dat`** — Current attendance export
+- **`attendance-last-week.dat`** — Last week attendance export (powering the **Last Week Report** filter)
+- **`users.dat`** — Binary employee directory
 
-## Biometric Rules
-- Column 5 (`rawField5`) = `15` → **Face Check-In** (First `15` of the day = Login)
-- Column 5 (`rawField5`) = `1` → **Fingerprint Check-Out** (Last `1` of the day = Logout)
+Replace these files weekly and redeploy; duplicates across files are automatically skipped.
 
-## Run
-```bash
-mvn clean spring-boot:run
-```
-Open http://localhost:8080.
+## Default Logins (2 Admins & 4 Clients)
+- **Admins**: `admin1` / `covibe@2026`, `admin2` / `covibe@2027`
+- **Clients**: `client1`–`client4` (`client1@2026` … `client4@2026`)

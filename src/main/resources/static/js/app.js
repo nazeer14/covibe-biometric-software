@@ -1,14 +1,4 @@
-/* =========================================================
-   CoVibe Attendance Portal — Server-Backed Client App
-   - 100% Shared Server Data via Spring Boot REST API
-     (./data-files/accounts.json, employees.json, punches.json)
-   - Admin uploads from any device -> All 4 Clients see live data
-   - Day Shift (7 AM–7 PM) & Night Shift (7 PM–7 AM) cross-midnight
-   - Column 5: 15 = Face Check-In (First = Login)
-               1  = Fingerprint Check-Out (Last = Logout)
-               4  = RFID Card
-   - Client Names masked on server as Na####r
-   ========================================================= */
+/* CoVibe Attendance Portal Client Application */
 
 (() => {
   'use strict';
@@ -27,8 +17,12 @@
       dark: false,
       editingEmpId: null,
       expandedKeys: new Set(),
+      period: 'all', // all | last-week | last-month | custom
+      customFrom: '',
+      customTo: '',
+      dailyLimit: 'all',
       page: 1,
-      pageSize: 20
+      pageSize: 100
     }
   };
 
@@ -42,29 +36,25 @@
 
   function getBioCode(p) {
     const r5 = String(p.rawField5 ?? '').trim();
-    if (r5 === '15' || r5 === '1' || r5 === '4') return r5;
-    const r3 = String(p.rawField3 ?? '').trim();
-    if (r3 === '15' || r3 === '4') return r3;
-    return r5 || r3 || '15';
+    if (r5 === '15' || r5 === '1') return r5;
+    return '';
   }
   function getDirection(p) {
     const c = getBioCode(p);
     if (c === '15') return 'IN';
     if (c === '1') return 'OUT';
-    if (c === '4') return 'CARD';
-    return 'IN';
+    return '';
   }
 
   function toast(msg, type = 'success') {
     const el = document.createElement('div');
     const cls = type === 'error' ? 'bg-rose-700 text-white' : type === 'warn' ? 'bg-covibe-orange text-white' : type === 'info' ? 'bg-covibe-navy text-white' : 'bg-covibe-teal text-white';
-    el.className = `pointer-events-auto px-4 py-2.5 rounded-xl shadow-lg text-xs font-semibold transition ${cls}`;
+    el.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg text-sm font-semibold transition ${cls}`;
     el.textContent = msg;
     $('toastContainer').appendChild(el);
     setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 220); }, 3400);
   }
 
-  // ==================== SERVER API HELPER ====================
   async function api(url, opts = {}) {
     const headers = Object.assign({}, opts.headers || {});
     if (state.token) headers['X-Auth-Token'] = state.token;
@@ -110,7 +100,8 @@
 
     const [daily, punches, employees, accounts] = await Promise.all(reqs);
     state.daily = Array.isArray(daily) ? daily : [];
-    state.punches = Array.isArray(punches) ? punches : [];
+    // Keep only Check In (15) and Check Out (1); exclude any RFID
+    state.punches = (Array.isArray(punches) ? punches : []).filter(p => getDirection(p) === 'IN' || getDirection(p) === 'OUT');
     state.employees = Array.isArray(employees) ? employees : [];
     if (isAdmin() && Array.isArray(accounts)) state.accounts = accounts;
     renderAll();
@@ -120,7 +111,6 @@
     return state.accounts.filter(a => a.role === 'CLIENT');
   }
 
-  // ==================== RENDER ====================
   function showView() {
     if (!state.currentUser) {
       $('loginScreen').classList.remove('hidden');
@@ -138,14 +128,14 @@
     ['ovClientFilter', 'dClient', 'empFilterClient'].forEach(id => {
       const sel = $(id); if (!sel) return;
       const cur = sel.value;
-      sel.innerHTML = `<option value="">${id === 'ovClientFilter' ? 'All 4 Client Companies' : 'All Clients'}</option>` +
-        clients.map(c => `<option value="${escapeHtml(c.companyCode)}">${escapeHtml(c.companyName)} (${escapeHtml(c.companyCode)})</option>`).join('');
+      sel.innerHTML = `<option value="">${id === 'ovClientFilter' ? 'All Client Companies' : 'All Clients'}</option>` +
+        clients.map(c => `<option value="${escapeHtml(c.companyCode)}">${escapeHtml(c.companyName)}</option>`).join('');
       sel.value = cur;
     });
     if ($('empClient')) {
       const cur = $('empClient').value;
       $('empClient').innerHTML = `<option value="">Unassigned</option>` +
-        clients.map(c => `<option value="${escapeHtml(c.companyCode)}">${escapeHtml(c.companyName)} (${escapeHtml(c.companyCode)})</option>`).join('');
+        clients.map(c => `<option value="${escapeHtml(c.companyCode)}">${escapeHtml(c.companyName)}</option>`).join('');
       if (cur) $('empClient').value = cur;
     }
   }
@@ -153,20 +143,20 @@
   function syncRoleUI() {
     const admin = isAdmin();
     document.querySelectorAll('.admin-only').forEach(el => el.classList.toggle('hidden', !admin));
-    $('empTableWrap').className = `${admin ? 'lg:col-span-2' : 'lg:col-span-3'} bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4`;
+    $('empTableWrap').className = `${admin ? 'lg:col-span-2' : 'lg:col-span-3'} bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-2xl p-6 shadow-sm space-y-4`;
     $('hdrUser').textContent = state.currentUser.username;
     $('hdrCompany').textContent = state.currentUser.companyName;
 
     if (admin) {
       $('roleBadge').textContent = 'ADMIN';
-      $('roleBadge').className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-covibe-teal/25 text-teal-200 border border-covibe-teal/50';
+      $('roleBadge').className = 'px-3 py-1 rounded-full text-xs font-bold bg-covibe-teal/25 text-teal-200 border border-covibe-teal/50';
       $('clientBanner').classList.add('hidden');
       $('overviewTitle').textContent = 'CoVibe Attendance Overview';
     } else {
       $('roleBadge').textContent = state.currentUser.companyName.toUpperCase();
-      $('roleBadge').className = 'px-2 py-0.5 rounded-full text-[10px] font-bold bg-covibe-orange text-white';
+      $('roleBadge').className = 'px-3 py-1 rounded-full text-xs font-bold bg-covibe-orange text-white';
       $('clientBanner').classList.remove('hidden');
-      $('clientBannerText').textContent = `${state.currentUser.companyName} (${state.currentUser.companyCode}) — Read-only portal • Employee names masked as Na####r`;
+      $('clientBannerText').textContent = `${state.currentUser.companyName} Read Only Attendance Portal`;
       $('overviewTitle').textContent = `${state.currentUser.companyName} Attendance`;
       if (state.ui.activeTab === 'upload') switchTab('overview');
     }
@@ -176,6 +166,7 @@
     if (!state.currentUser) return;
     populateClientSelects();
     syncRoleUI();
+    updatePeriodUI();
     renderOverview();
     renderDaily();
     renderPunches();
@@ -184,13 +175,66 @@
     if (window.lucide) lucide.createIcons();
   }
 
+  function getLatestDataDate() {
+    let maxD = '';
+    state.daily.forEach(r => { if (r.date && r.date > maxD) maxD = r.date; });
+    state.punches.forEach(p => { const d = (p.punchTime || '').slice(0, 10); if (d > maxD) maxD = d; });
+    return maxD || new Date().toISOString().slice(0, 10);
+  }
+
+  function shiftDateByDays(dateStr, deltaDays) {
+    const d = new Date(dateStr + 'T12:00:00');
+    d.setDate(d.getDate() + deltaDays);
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  }
+
+  function hasLastWeekFileData() {
+    return state.punches.some(p => p.sourceFile === 'attendance-last-week.dat');
+  }
+
+  function matchesPeriodDate(dateStr, isFromLastWeekFile) {
+    const mode = state.ui.period;
+    if (mode === 'all') return true;
+    if (mode === 'last-week') {
+      if (hasLastWeekFileData()) return Boolean(isFromLastWeekFile);
+      const latest = getLatestDataDate();
+      const start = shiftDateByDays(latest, -6);
+      return dateStr >= start && dateStr <= latest;
+    }
+    if (mode === 'last-month') {
+      const latest = getLatestDataDate();
+      const start = shiftDateByDays(latest, -29);
+      return dateStr >= start && dateStr <= latest;
+    }
+    if (mode === 'custom') {
+      if (state.ui.customFrom && dateStr < state.ui.customFrom) return false;
+      if (state.ui.customTo && dateStr > state.ui.customTo) return false;
+      return true;
+    }
+    return true;
+  }
+
+  function updatePeriodUI() {
+    const mode = state.ui.period;
+    document.querySelectorAll('.period-btn').forEach(b => {
+      const act = b.dataset.period === mode;
+      b.className = `period-btn px-4 py-2 rounded-xl text-sm font-semibold transition ${act ? 'bg-covibe-navy text-white shadow-sm' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200'}`;
+    });
+    $('customPeriodInputs').classList.toggle('hidden', mode !== 'custom');
+    const badge = $('activePeriodBadge');
+    if (mode === 'all') badge.textContent = 'Showing All Data';
+    else if (mode === 'last-week') badge.textContent = hasLastWeekFileData() ? 'Showing Last Week File (attendance-last-week.dat)' : 'Showing Last 7 Days Report';
+    else if (mode === 'last-month') badge.textContent = 'Showing Last 30 Days Report';
+    else badge.textContent = `Custom Period: ${state.ui.customFrom || 'Start'} to ${state.ui.customTo || 'End'}`;
+  }
+
   function renderOverview() {
     const cid = isAdmin() ? ($('ovClientFilter').value || null) : null;
-    const punches = cid ? state.punches.filter(p => p.clientId === cid) : state.punches;
-    const daily = cid ? state.daily.filter(r => r.clientId === cid) : state.daily;
+    const punches = state.punches.filter(p => (!cid || p.clientId === cid) && matchesPeriodDate((p.punchTime || '').slice(0, 10), p.sourceFile === 'attendance-last-week.dat'));
+    const daily = state.daily.filter(r => (!cid || r.clientId === cid) && matchesPeriodDate(r.date, r.fromLastWeekFile));
 
-    const faceTotal = punches.filter(p => getDirection(p) === 'IN').length;
-    const fpTotal = punches.filter(p => getDirection(p) === 'OUT').length;
+    const inTotal = punches.filter(p => getDirection(p) === 'IN').length;
+    const outTotal = punches.filter(p => getDirection(p) === 'OUT').length;
     const loginDays = daily.filter(r => r.firstLogin).length;
     const completeDays = daily.filter(r => r.firstLogin && r.lastLogout).length;
     const dayShiftCnt = daily.filter(r => r.shift === 'Day').length;
@@ -200,29 +244,29 @@
     const uniqueEmps = new Set(punches.map(p => p.employeeId)).size;
 
     $('kpiScans').textContent = punches.length.toLocaleString();
-    $('kpiScansSub').textContent = `${faceTotal.toLocaleString()} Face IN • ${fpTotal.toLocaleString()} Finger OUT`;
+    $('kpiScansSub').textContent = `${inTotal.toLocaleString()} Check In and ${outTotal.toLocaleString()} Check Out`;
     $('kpiFaceIn').textContent = loginDays.toLocaleString();
-    $('kpiFaceSub').textContent = `${dayShiftCnt.toLocaleString()} Day • ${nightShiftCnt.toLocaleString()} Night shifts`;
+    $('kpiFaceSub').textContent = `${dayShiftCnt.toLocaleString()} Day and ${nightShiftCnt.toLocaleString()} Night Shifts`;
     $('kpiFingerOut').textContent = completeDays.toLocaleString();
-    $('kpiFingerSub').textContent = `Complete Login + Logout days`;
+    $('kpiFingerSub').textContent = `Login and Logout paired`;
     $('kpiEmps').textContent = uniqueEmps.toLocaleString();
     $('kpiAvgSpan').textContent = `Avg span: ${formatMins(avgM)}`;
 
     if (typeof Chart === 'undefined') return;
     const dark = state.ui.dark, txt = dark ? '#cbd5e1' : '#475569', grid = dark ? 'rgba(148,163,184,0.12)' : 'rgba(148,163,184,0.2)';
 
-    const dates = [...new Set(daily.map(r => r.date))].sort().slice(-12);
+    const dates = [...new Set(daily.map(r => r.date))].sort().slice(-14);
     if (charts.daily) charts.daily.destroy();
     charts.daily = new Chart($('dailyChart'), {
       type: 'bar',
       data: {
-        labels: dates.map(d => d.slice(5)),
+        labels: dates,
         datasets: [
-          { label: 'Day Shift (7 AM–7 PM)', data: dates.map(d => daily.filter(r => r.date === d && r.shift === 'Day').length), backgroundColor: '#009098', borderRadius: 5 },
-          { label: 'Night Shift (7 PM–7 AM)', data: dates.map(d => daily.filter(r => r.date === d && r.shift === 'Night').length), backgroundColor: '#003058', borderRadius: 5 }
+          { label: 'Day Shift', data: dates.map(d => daily.filter(r => r.date === d && r.shift === 'Day').length), backgroundColor: '#009098', borderRadius: 6 },
+          { label: 'Night Shift', data: dates.map(d => daily.filter(r => r.date === d && r.shift === 'Night').length), backgroundColor: '#003058', borderRadius: 6 }
         ]
       },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: txt, boxWidth: 10, font: { size: 11 } } } }, scales: { x: { stacked: true, ticks: { color: txt }, grid: { display: false } }, y: { stacked: true, beginAtZero: true, ticks: { color: txt, precision: 0 }, grid: { color: grid } } } }
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: txt, boxWidth: 12, font: { family: 'Poppins', size: 12 } } } }, scales: { x: { stacked: true, ticks: { color: txt, font: { family: 'Poppins' } }, grid: { display: false } }, y: { stacked: true, beginAtZero: true, ticks: { color: txt, precision: 0, font: { family: 'Poppins' } }, grid: { color: grid } } } }
     });
 
     const fBins = new Array(24).fill(0), oBins = new Array(24).fill(0);
@@ -236,11 +280,11 @@
       data: {
         labels: fBins.map((_, h) => `${pad(h)}:00`),
         datasets: [
-          { label: 'Face Check-In (15)', data: fBins, borderColor: '#009098', backgroundColor: 'rgba(0,144,152,0.16)', fill: true, tension: 0.35, pointRadius: 2 },
-          { label: 'Fingerprint Check-Out (1)', data: oBins, borderColor: '#F87800', backgroundColor: 'rgba(248,120,0,0.15)', fill: true, tension: 0.35, pointRadius: 2 }
+          { label: 'Check In', data: fBins, borderColor: '#009098', backgroundColor: 'rgba(0,144,152,0.16)', fill: true, tension: 0.35, pointRadius: 2.5 },
+          { label: 'Check Out', data: oBins, borderColor: '#F87800', backgroundColor: 'rgba(248,120,0,0.15)', fill: true, tension: 0.35, pointRadius: 2.5 }
         ]
       },
-      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: txt, boxWidth: 10, font: { size: 11 } } } }, scales: { x: { ticks: { color: txt, maxTicksLimit: 12, font: { size: 10 } }, grid: { display: false } }, y: { beginAtZero: true, ticks: { color: txt, precision: 0 }, grid: { color: grid } } } }
+      options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: txt, boxWidth: 12, font: { family: 'Poppins', size: 12 } } } }, scales: { x: { ticks: { color: txt, maxTicksLimit: 12, font: { family: 'Poppins', size: 11 } }, grid: { display: false } }, y: { beginAtZero: true, ticks: { color: txt, precision: 0, font: { family: 'Poppins' } }, grid: { color: grid } } } }
     });
   }
 
@@ -248,6 +292,7 @@
     const from = $('dFrom').value, to = $('dTo').value, q = $('dSearch').value.trim().toLowerCase();
     const cl = isAdmin() ? $('dClient').value : '', sh = $('dShift').value;
     return state.daily.filter(r => {
+      if (!matchesPeriodDate(r.date, r.fromLastWeekFile)) return false;
       if (from && r.date < from) return false;
       if (to && r.date > to) return false;
       if (cl && r.clientId !== cl) return false;
@@ -259,36 +304,42 @@
 
   function renderDaily() {
     const rows = getFilteredDaily();
-    $('dailyCount').textContent = `${rows.length.toLocaleString()} daily attendance rows`;
-    if (!rows.length) {
-      $('dailyBody').innerHTML = `<tr><td colspan="9" class="px-4 py-10 text-center text-slate-400">No attendance records yet. ${isAdmin() ? 'Upload an eSSL .dat file under Upload & Accounts.' : 'No uploaded records found for your company yet.'}</td></tr>`;
+    const lim = state.ui.dailyLimit === 'all' ? rows.length : Number(state.ui.dailyLimit);
+    const visible = rows.slice(0, lim);
+    $('dailyCount').textContent = `Showing ${visible.length.toLocaleString()} of ${rows.length.toLocaleString()} daily attendance records`;
+
+    if (!visible.length) {
+      $('dailyBody').innerHTML = `<tr><td colspan="9" class="px-4 py-10 text-center text-slate-400">No attendance records found for the selected filters.</td></tr>`;
       return;
     }
-    $('dailyBody').innerHTML = rows.slice(0, 300).map(r => {
+
+    $('dailyBody').innerHTML = visible.map(r => {
       const exp = state.ui.expandedKeys.has(r.key);
       const shiftBadge = r.shift === 'Night'
-        ? '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-covibe-navy text-white">Night</span>'
-        : '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-covibe-orangeSoft text-covibe-orangeDark dark:bg-orange-950 dark:text-orange-300">Day</span>';
+        ? '<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-covibe-navy text-white">Night</span>'
+        : '<span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-covibe-orangeSoft text-covibe-orangeDark dark:bg-orange-950 dark:text-orange-300">Day</span>';
       const logoutDisp = r.lastLogout
-        ? `${escapeHtml(r.lastLogout.slice(11))}${r.nextDayLogout ? ' <span class="text-[10px] px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">+1d</span>' : ''}`
-        : '<span class="text-slate-400">—</span>';
+        ? `${escapeHtml(r.lastLogout.slice(11))}${r.nextDayLogout ? ' <span class="text-xs px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Next Day</span>' : ''}`
+        : '<span class="text-slate-400">Not Recorded</span>';
+
       let html = `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50 cursor-pointer daily-row" data-key="${escapeHtml(r.key)}">
-        <td class="px-3.5 py-2.5 font-mono font-semibold text-covibe-navy dark:text-sky-300">${escapeHtml(r.employeeId)}</td>
-        <td class="px-3.5 py-2.5 font-semibold">${escapeHtml(r.employeeName)}</td>
-        <td class="px-3.5 py-2.5 text-slate-500">${escapeHtml(r.clientName)}</td>
-        <td class="px-3.5 py-2.5 font-mono">${escapeHtml(r.date)}</td>
-        <td class="px-3.5 py-2.5">${shiftBadge}</td>
-        <td class="px-3.5 py-2.5 font-mono font-semibold text-covibe-tealDark dark:text-teal-300">${r.firstLogin ? escapeHtml(r.firstLogin.slice(11)) : '<span class="text-slate-400">—</span>'}</td>
-        <td class="px-3.5 py-2.5 font-mono font-semibold text-covibe-orangeDark dark:text-orange-300">${logoutDisp}</td>
-        <td class="px-3.5 py-2.5 text-center font-mono"><span class="text-covibe-teal font-bold">${r.inCount}</span> / <span class="text-covibe-orange font-bold">${r.outCount}</span></td>
-        <td class="px-3.5 py-2.5 font-bold">${r.minutes > 0 ? formatMins(r.minutes) : '—'}</td>
+        <td class="px-4 py-3 font-semibold text-covibe-navy dark:text-sky-300">${escapeHtml(r.employeeId)}</td>
+        <td class="px-4 py-3 font-semibold">${escapeHtml(r.employeeName)}</td>
+        <td class="px-4 py-3 text-slate-500">${escapeHtml(r.clientName)}</td>
+        <td class="px-4 py-3">${escapeHtml(r.date)}</td>
+        <td class="px-4 py-3">${shiftBadge}</td>
+        <td class="px-4 py-3 font-semibold text-covibe-tealDark dark:text-teal-300">${r.firstLogin ? escapeHtml(r.firstLogin.slice(11)) : '<span class="text-slate-400">Not Recorded</span>'}</td>
+        <td class="px-4 py-3 font-semibold text-covibe-orangeDark dark:text-orange-300">${logoutDisp}</td>
+        <td class="px-4 py-3 text-center"><span class="text-covibe-teal font-bold">${r.inCount}</span> / <span class="text-covibe-orange font-bold">${r.outCount}</span></td>
+        <td class="px-4 py-3 font-bold">${r.minutes > 0 ? formatMins(r.minutes) : 'N/A'}</td>
       </tr>`;
+
       if (exp && Array.isArray(r.punches)) {
-        const tl = r.punches.map(p => {
+        const tl = r.punches.filter(p => getDirection(p) === 'IN' || getDirection(p) === 'OUT').map(p => {
           const d = getDirection(p);
-          return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-white dark:bg-slate-900 border ${d==='IN'?'border-covibe-teal/50 text-covibe-tealDark':d==='OUT'?'border-covibe-orange/50 text-covibe-orangeDark':'border-slate-300 text-slate-600'} text-[11px] font-mono"><strong>${d==='IN'?'Face 15':d==='OUT'?'Finger 1':'Card 4'}</strong> ${escapeHtml(p.punchTime)}</span>`;
+          return `<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white dark:bg-slate-900 border ${d==='IN'?'border-covibe-teal/50 text-covibe-tealDark':'border-covibe-orange/50 text-covibe-orangeDark'} text-xs"><strong>${d==='IN'?'Check In':'Check Out'}</strong> ${escapeHtml(p.punchTime)}</span>`;
         }).join('');
-        html += `<tr class="bg-slate-50 dark:bg-slate-950/60"><td colspan="9" class="px-4 py-3"><div class="flex flex-wrap gap-1.5 items-center"><span class="text-[11px] font-bold text-slate-500 mr-1">${r.shift} Shift Scans:</span>${tl}</div></td></tr>`;
+        html += `<tr class="bg-slate-50 dark:bg-slate-950/60"><td colspan="9" class="px-5 py-3.5"><div class="flex flex-wrap gap-2 items-center"><span class="text-xs font-bold text-slate-500 mr-1">${r.shift} Shift Activity:</span>${tl}</div></td></tr>`;
       }
       return html;
     }).join('');
@@ -297,6 +348,8 @@
   function getFilteredPunches() {
     const q = $('pSearch').value.trim().toLowerCase(), from = $('pFrom').value, to = $('pTo').value, mode = $('pMode').value;
     return state.punches.filter(p => {
+      const pd = (p.punchTime || '').slice(0, 10);
+      if (!matchesPeriodDate(pd, p.sourceFile === 'attendance-last-week.dat')) return false;
       if (q && !(String(p.employeeId).toLowerCase().includes(q) || String(p.employeeName || '').toLowerCase().includes(q))) return false;
       const d = (p.punchTime || '').slice(0, 10);
       if (from && d < from) return false;
@@ -308,28 +361,30 @@
 
   function renderPunches() {
     const list = getFilteredPunches();
-    const totalPages = Math.max(1, Math.ceil(list.length / state.ui.pageSize));
+    const showAll = state.ui.pageSize === 'all';
+    const perPage = showAll ? Math.max(1, list.length) : Number(state.ui.pageSize);
+    const totalPages = Math.max(1, Math.ceil(list.length / perPage));
     if (state.ui.page > totalPages) state.ui.page = totalPages;
-    const rows = list.slice((state.ui.page - 1) * state.ui.pageSize, state.ui.page * state.ui.pageSize);
-    $('punchCount').textContent = `${list.length.toLocaleString()} matching scans`;
-    $('pageInfo').textContent = `Page ${state.ui.page} / ${totalPages}`;
-    $('btnPrevPage').disabled = state.ui.page <= 1;
-    $('btnNextPage').disabled = state.ui.page >= totalPages;
+    const rows = showAll ? list : list.slice((state.ui.page - 1) * perPage, state.ui.page * perPage);
+
+    $('punchCount').textContent = `Showing ${rows.length.toLocaleString()} of ${list.length.toLocaleString()} records`;
+    $('pageInfo').textContent = `Page ${state.ui.page} of ${totalPages}`;
+    $('btnPrevPage').disabled = showAll || state.ui.page <= 1;
+    $('btnNextPage').disabled = showAll || state.ui.page >= totalPages;
 
     $('punchBody').innerHTML = rows.map(p => {
       const d = getDirection(p);
-      const badge = d === 'IN' ? '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-covibe-tealSoft text-covibe-tealDark">Face (15) • Check-In</span>'
-        : d === 'OUT' ? '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-covibe-orangeSoft text-covibe-orangeDark">Fingerprint (1) • Check-Out</span>'
-        : '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-700">RFID Card (4)</span>';
+      const badge = d === 'IN'
+        ? '<span class="px-3 py-1 rounded-full text-xs font-bold bg-covibe-tealSoft text-covibe-tealDark">Check In</span>'
+        : '<span class="px-3 py-1 rounded-full text-xs font-bold bg-covibe-orangeSoft text-covibe-orangeDark">Check Out</span>';
       return `<tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-        <td class="px-3.5 py-2.5 font-mono font-semibold text-covibe-navy dark:text-sky-300">${escapeHtml(p.employeeId)}</td>
-        <td class="px-3.5 py-2.5 font-medium">${escapeHtml(p.employeeName)}</td>
-        <td class="px-3.5 py-2.5 text-slate-500">${escapeHtml(p.clientName || 'Unassigned')}</td>
-        <td class="px-3.5 py-2.5 font-mono">${escapeHtml(p.punchTime)}</td>
-        <td class="px-3.5 py-2.5">${badge}</td>
-        <td class="px-3.5 py-2.5 text-slate-500 truncate max-w-[160px]">${escapeHtml(p.sourceFile || 'uploaded')}</td>
+        <td class="px-4 py-3 font-semibold text-covibe-navy dark:text-sky-300">${escapeHtml(p.employeeId)}</td>
+        <td class="px-4 py-3 font-medium">${escapeHtml(p.employeeName)}</td>
+        <td class="px-4 py-3 text-slate-500">${escapeHtml(p.clientName || 'CoVibe')}</td>
+        <td class="px-4 py-3">${escapeHtml(p.punchTime)}</td>
+        <td class="px-4 py-3">${badge}</td>
       </tr>`;
-    }).join('') || `<tr><td colspan="6" class="px-4 py-10 text-center text-slate-400">No punch logs found.</td></tr>`;
+    }).join('') || `<tr><td colspan="5" class="px-4 py-10 text-center text-slate-400">No punch records found.</td></tr>`;
   }
 
   function renderEmployees() {
@@ -343,13 +398,12 @@
     $('empCount').textContent = `${list.length} employees`;
     $('empBody').innerHTML = list.map(e => `
       <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-        <td class="px-3.5 py-2.5 font-mono font-semibold text-covibe-navy dark:text-sky-300">${escapeHtml(e.employeeId)}</td>
-        <td class="px-3.5 py-2.5 font-semibold">${escapeHtml(e.name)}</td>
-        <td class="px-3.5 py-2.5 font-mono font-semibold text-covibe-orangeDark">${escapeHtml(e.maskedName || e.name)}</td>
-        <td class="px-3.5 py-2.5 text-slate-600 dark:text-slate-300">${escapeHtml(e.clientName || 'Unassigned')}</td>
-        <td class="px-3.5 py-2.5 text-right whitespace-nowrap ${admin ? '' : 'hidden'}">
-          <button class="btn-ed-emp px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 mr-1" data-id="${escapeHtml(e.employeeId)}">Edit</button>
-          <button class="btn-dl-emp px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-rose-50 text-rose-600" data-id="${escapeHtml(e.employeeId)}">Del</button>
+        <td class="px-4 py-3 font-semibold text-covibe-navy dark:text-sky-300">${escapeHtml(e.employeeId)}</td>
+        <td class="px-4 py-3 font-semibold">${escapeHtml(e.name)}</td>
+        <td class="px-4 py-3 font-semibold text-covibe-orangeDark">${escapeHtml(e.maskedName || e.name)}</td>
+        <td class="px-4 py-3 text-slate-600 dark:text-slate-300">${escapeHtml(e.clientName || 'CoVibe')}</td>
+        <td class="px-4 py-3 text-right whitespace-nowrap ${admin ? '' : 'hidden'}">
+          <button class="btn-ed-emp px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 hover:bg-slate-200" data-id="${escapeHtml(e.employeeId)}">Edit</button>
         </td>
       </tr>`).join('') || `<tr><td colspan="5" class="px-4 py-10 text-center text-slate-400">No employees found.</td></tr>`;
   }
@@ -357,45 +411,15 @@
   function renderAccounts() {
     $('accountsBody').innerHTML = state.accounts.map(a => `
       <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/40">
-        <td class="px-3.5 py-2.5"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${a.role==='ADMIN'?'bg-covibe-navy text-white':'bg-covibe-orangeSoft text-covibe-orangeDark'}">${a.role}</span></td>
-        <td class="px-3.5 py-2.5 font-mono font-bold">${escapeHtml(a.username)}</td>
-        <td class="px-3.5 py-2.5"><input type="text" value="${escapeHtml(a.password)}" data-id="${a.id}" data-f="password" class="acc-inp px-2.5 py-1 text-xs font-mono rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 w-36" /></td>
-        <td class="px-3.5 py-2.5 font-mono text-slate-500">${escapeHtml(a.companyCode)}</td>
-        <td class="px-3.5 py-2.5"><input type="text" value="${escapeHtml(a.companyName)}" data-id="${a.id}" data-f="companyName" class="acc-inp px-2.5 py-1 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 w-48" /></td>
-        <td class="px-3.5 py-2.5 text-right"><button class="btn-save-acc px-3 py-1 rounded-lg text-[11px] font-bold bg-covibe-teal text-white" data-id="${a.id}">Save</button></td>
+        <td class="px-4 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-bold ${a.role==='ADMIN'?'bg-covibe-navy text-white':'bg-covibe-orangeSoft text-covibe-orangeDark'}">${a.role}</span></td>
+        <td class="px-4 py-3 font-bold">${escapeHtml(a.username)}</td>
+        <td class="px-4 py-3"><input type="text" value="${escapeHtml(a.password)}" data-id="${a.id}" data-f="password" class="acc-inp px-3 py-1.5 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 w-40" /></td>
+        <td class="px-4 py-3 text-slate-500">${escapeHtml(a.companyCode)}</td>
+        <td class="px-4 py-3"><input type="text" value="${escapeHtml(a.companyName)}" data-id="${a.id}" data-f="companyName" class="acc-inp px-3 py-1.5 text-sm rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-950 w-52" /></td>
+        <td class="px-4 py-3 text-right"><button class="btn-save-acc px-4 py-1.5 rounded-lg text-xs font-bold bg-covibe-teal hover:bg-covibe-tealDark text-white" data-id="${a.id}">Save</button></td>
       </tr>`).join('');
   }
 
-  // ==================== SERVER UPLOADS ====================
-  async function uploadAttendanceToServer(file) {
-    if (!isAdmin() || !file) return;
-    try {
-      toast(`Uploading ${file.name} to server...`, 'info');
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await api('/api/import', { method: 'POST', body: fd });
-      await refreshAllFromServer();
-      toast(`Server saved ${Number(res.imported || 0).toLocaleString()} punches (${Number(res.duplicates || 0).toLocaleString()} duplicates skipped). Visible on all devices!`);
-    } catch (err) {
-      toast(err.message, 'error');
-    }
-  }
-
-  async function uploadUsersToServer(file) {
-    if (!isAdmin() || !file) return;
-    try {
-      toast(`Uploading ${file.name} to server...`, 'info');
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await api('/api/users/import', { method: 'POST', body: fd });
-      await refreshAllFromServer();
-      toast(`Server updated users: ${res.imported || 0} added, ${res.updated || 0} updated.`);
-    } catch (err) {
-      toast(err.message, 'error');
-    }
-  }
-
-  // ==================== EXPORTERS ====================
   function dlBlob(content, filename, mime) {
     const url = URL.createObjectURL(new Blob([content], { type: mime })), a = document.createElement('a');
     a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
@@ -416,24 +440,23 @@
   function handleExport(type) {
     const daily = getFilteredDaily().map(r => ({
       EmployeeID: r.employeeId, Employee: r.employeeName, Client: r.clientName, Date: r.date, Shift: r.shift,
-      Login_FirstFace: r.firstLogin || '', Logout_LastFingerprint: r.lastLogout || '',
-      Face_INs: r.inCount, Finger_OUTs: r.outCount, TotalSpan: r.minutes > 0 ? formatMins(r.minutes) : ''
+      LoginTime: r.firstLogin || '', LogoutTime: r.lastLogout || '',
+      CheckInCount: r.inCount, CheckOutCount: r.outCount, TotalSpan: r.minutes > 0 ? formatMins(r.minutes) : ''
     }));
     const punches = getFilteredPunches().map(p => ({
       EmployeeID: p.employeeId, Employee: p.employeeName, PunchTime: p.punchTime,
-      Mode: getDirection(p) === 'IN' ? 'Face (15) Check-In' : getDirection(p) === 'OUT' ? 'Fingerprint (1) Check-Out' : 'RFID Card (4)'
+      Event: getDirection(p) === 'IN' ? 'Check In' : 'Check Out'
     }));
-    const emps = state.employees.map(e => ({ EmployeeID: e.employeeId, Name: e.name, Client: e.clientName || 'Unassigned' }));
+    const emps = state.employees.map(e => ({ EmployeeID: e.employeeId, Name: e.name, Client: e.clientName || 'CoVibe' }));
 
-    if (type === 'daily-csv') dlBlob(toCsv(daily), 'covibe-daily-report.csv', 'text/csv;charset=utf-8');
-    else if (type === 'daily-xlsx') exportXlsx({ 'Daily Report': daily }, 'covibe-daily-report.xlsx');
-    else if (type === 'punches-csv') dlBlob(toCsv(punches), 'covibe-punch-logs.csv', 'text/csv;charset=utf-8');
-    else if (type === 'punches-xlsx') exportXlsx({ 'Punch Logs': punches }, 'covibe-punch-logs.xlsx');
-    else if (type === 'employees-xlsx') exportXlsx({ 'Employees': emps }, 'covibe-employees.xlsx');
-    else if (type === 'full-xlsx') exportXlsx({ 'Daily Report': daily, 'Punch Logs': punches, 'Employees': emps }, 'covibe-attendance-report.xlsx');
+    if (type === 'daily-csv') dlBlob(toCsv(daily), 'covibe_daily_report.csv', 'text/csv;charset=utf-8');
+    else if (type === 'daily-xlsx') exportXlsx({ 'Daily Report': daily }, 'covibe_daily_report.xlsx');
+    else if (type === 'punches-csv') dlBlob(toCsv(punches), 'covibe_punch_logs.csv', 'text/csv;charset=utf-8');
+    else if (type === 'punches-xlsx') exportXlsx({ 'Punch Logs': punches }, 'covibe_punch_logs.xlsx');
+    else if (type === 'employees-xlsx') exportXlsx({ 'Employees': emps }, 'covibe_employees.xlsx');
+    else if (type === 'full-xlsx') exportXlsx({ 'Daily Report': daily, 'Punch Logs': punches, 'Employees': emps }, 'covibe_attendance_report.xlsx');
   }
 
-  // ==================== EVENTS ====================
   function switchTab(tab) {
     if (!isAdmin() && tab === 'upload') return;
     state.ui.activeTab = tab;
@@ -441,7 +464,7 @@
     $('tab-' + tab).classList.remove('hidden');
     document.querySelectorAll('.nav-btn').forEach(b => {
       const act = b.dataset.tab === tab, adm = b.classList.contains('admin-only');
-      b.className = `nav-btn${adm ? ' admin-only' : ''}${adm && !isAdmin() ? ' hidden' : ''} inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition ${act ? 'bg-covibe-teal text-white shadow-sm' : 'text-slate-200 hover:bg-white/10'}`;
+      b.className = `nav-btn${adm ? ' admin-only' : ''}${adm && !isAdmin() ? ' hidden' : ''} inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition ${act ? 'bg-covibe-teal text-white shadow-sm' : 'text-slate-200 hover:bg-white/10'}`;
     });
     if (tab === 'overview') renderOverview();
   }
@@ -476,7 +499,20 @@
     });
 
     $('mainNav').addEventListener('click', e => { const b = e.target.closest('.nav-btn'); if (b) switchTab(b.dataset.tab); });
-    $('btnTopUpload').addEventListener('click', () => switchTab('upload'));
+    $('periodNav').addEventListener('click', e => {
+      const b = e.target.closest('.period-btn');
+      if (!b) return;
+      state.ui.period = b.dataset.period;
+      state.ui.page = 1;
+      renderAll();
+    });
+    $('btnApplyCustomPeriod').addEventListener('click', () => {
+      state.ui.customFrom = $('gFrom').value;
+      state.ui.customTo = $('gTo').value;
+      state.ui.period = 'custom';
+      state.ui.page = 1;
+      renderAll();
+    });
     $('btnTopExport').addEventListener('click', () => handleExport('full-xlsx'));
     $('btnPrint').addEventListener('click', () => window.print());
     $('ovClientFilter').addEventListener('change', renderOverview);
@@ -484,6 +520,7 @@
     document.querySelectorAll('[data-export]').forEach(b => b.addEventListener('click', () => handleExport(b.dataset.export)));
 
     ['dFrom', 'dTo', 'dSearch', 'dClient', 'dShift'].forEach(id => $(id).addEventListener('input', renderDaily));
+    $('dPageSize').addEventListener('change', e => { state.ui.dailyLimit = e.target.value; renderDaily(); });
     $('btnDailyClear').addEventListener('click', () => { ['dFrom', 'dTo', 'dSearch', 'dClient', 'dShift'].forEach(id => $(id).value = ''); renderDaily(); });
     $('dailyBody').addEventListener('click', e => {
       const tr = e.target.closest('.daily-row'); if (!tr) return;
@@ -492,11 +529,11 @@
     });
 
     ['pSearch', 'pFrom', 'pTo', 'pMode'].forEach(id => $(id).addEventListener('input', () => { state.ui.page = 1; renderPunches(); }));
+    $('pPageSize').addEventListener('change', e => { state.ui.pageSize = e.target.value; state.ui.page = 1; renderPunches(); });
     $('btnPunchClear').addEventListener('click', () => { ['pSearch', 'pFrom', 'pTo', 'pMode'].forEach(id => $(id).value = ''); state.ui.page = 1; renderPunches(); });
     $('btnPrevPage').addEventListener('click', () => { if (state.ui.page > 1) { state.ui.page--; renderPunches(); } });
     $('btnNextPage').addEventListener('click', () => { state.ui.page++; renderPunches(); });
 
-    // Employees CRUD (Server-backed)
     $('empForm').addEventListener('submit', async e => {
       e.preventDefault(); if (!isAdmin()) return;
       try {
@@ -510,53 +547,26 @@
             department: $('empDept').value.trim()
           })
         });
-        state.ui.editingEmpId = null; $('empForm').reset(); $('empId').disabled = false; $('empFormTitle').textContent = 'Add / Edit Employee';
+        state.ui.editingEmpId = null; $('empForm').reset(); $('empId').disabled = false; $('empFormTitle').textContent = 'Edit Employee';
         await refreshAllFromServer();
-        toast('Employee saved to server.');
+        toast('Employee updated.');
       } catch (err) { toast(err.message, 'error'); }
     });
 
     $('btnResetEmp').addEventListener('click', () => { state.ui.editingEmpId = null; $('empForm').reset(); $('empId').disabled = false; });
     ['empSearch', 'empFilterClient'].forEach(id => $(id).addEventListener('input', renderEmployees));
 
-    $('empBody').addEventListener('click', async e => {
+    $('empBody').addEventListener('click', e => {
       if (!isAdmin()) return;
       const ed = e.target.closest('.btn-ed-emp');
       if (ed) {
         const emp = state.employees.find(x => x.employeeId === ed.dataset.id); if (!emp) return;
         state.ui.editingEmpId = emp.employeeId; $('empId').value = emp.employeeId; $('empId').disabled = true;
         $('empName').value = emp.name; $('empClient').value = emp.clientId || ''; $('empDept').value = emp.department || '';
-        $('empFormTitle').textContent = `Edit ${emp.employeeId}`; return;
-      }
-      const dl = e.target.closest('.btn-dl-emp');
-      if (dl) {
-        try {
-          await api('/api/users/' + encodeURIComponent(dl.dataset.id), { method: 'DELETE' });
-          await refreshAllFromServer();
-          toast('Employee removed from server.');
-        } catch (err) { toast(err.message, 'error'); }
+        $('empFormTitle').textContent = `Edit ${emp.employeeId}`;
       }
     });
 
-    $('btnGenPlaceholders').addEventListener('click', async () => {
-      if (!isAdmin()) return;
-      try {
-        const res = await api('/api/users/generate-missing', { method: 'POST' });
-        await refreshAllFromServer();
-        toast(res.created ? `Created ${res.created} placeholders on server.` : 'All IDs already mapped.');
-      } catch (err) { toast(err.message, 'error'); }
-    });
-
-    // Server File Uploads (Admin Only)
-    $('attFileInput').addEventListener('change', e => { if (e.target.files[0]) uploadAttendanceToServer(e.target.files[0]); e.target.value = ''; });
-    $('attDropZone').addEventListener('dragover', e => e.preventDefault());
-    $('attDropZone').addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) uploadAttendanceToServer(e.dataTransfer.files[0]); });
-
-    $('userFileInput').addEventListener('change', e => { if (e.target.files[0]) uploadUsersToServer(e.target.files[0]); e.target.value = ''; });
-    $('userDropZone').addEventListener('dragover', e => e.preventDefault());
-    $('userDropZone').addEventListener('drop', e => { e.preventDefault(); if (e.dataTransfer.files[0]) uploadUsersToServer(e.dataTransfer.files[0]); });
-
-    // Accounts Save (Server-backed)
     $('accountsBody').addEventListener('click', async e => {
       const btn = e.target.closest('.btn-save-acc'); if (!btn || !isAdmin()) return;
       const id = btn.dataset.id;
@@ -569,20 +579,7 @@
           body: JSON.stringify(body)
         });
         await refreshAllFromServer();
-        toast('Account saved on server for all devices.');
-      } catch (err) { toast(err.message, 'error'); }
-    });
-
-    // Clear Data Modal (Admin Only -> Server)
-    $('btnClearDataOpen').addEventListener('click', () => { $('clearModal').classList.remove('hidden'); $('clearModal').classList.add('flex'); });
-    $('btnCancelClear').addEventListener('click', () => { $('clearModal').classList.add('hidden'); $('clearModal').classList.remove('flex'); });
-    $('btnConfirmClear').addEventListener('click', async () => {
-      if (!isAdmin()) return;
-      try {
-        await api('/api/records/clear', { method: 'DELETE' });
-        $('clearModal').classList.add('hidden'); $('clearModal').classList.remove('flex');
-        await refreshAllFromServer();
-        toast('All punch records cleared on server.');
+        toast('Account updated.');
       } catch (err) { toast(err.message, 'error'); }
     });
   }

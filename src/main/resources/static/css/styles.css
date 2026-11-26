@@ -1,10 +1,4 @@
-/* =========================================================
-   CoVibe Attendance Portal — Stylesheet
-   Brand Palette:
-     Navy:   #003058
-     Teal:   #009098 (Face Check-In / Login)
-     Orange: #F87800 (Fingerprint Check-Out / Logout)
-   ========================================================= */
+/* CoVibe Attendance Portal Stylesheet */
 
 :root {
   --covibe-navy: #003058;
@@ -15,11 +9,31 @@
   --covibe-orange-soft: #fff3e6;
 }
 
-* { box-sizing: border-box; }
-    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    @media print {
-      .no-print { display: none !important; }
-      body { background: #fff !important; color: #000 !important; }
-    }
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+}

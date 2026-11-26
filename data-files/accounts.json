@@ -18,26 +18,26 @@
   "username" : "client1",
   "password" : "client1@2026",
   "companyCode" : "CL-01",
-  "companyName" : "Client Company 1"
+  "companyName" : "Blue Summit"
 }, {
   "id" : "C2",
   "role" : "CLIENT",
   "username" : "client2",
   "password" : "client2@2026",
   "companyCode" : "CL-02",
-  "companyName" : "Client Company 2"
+  "companyName" : "Gray Parret"
 }, {
   "id" : "C3",
   "role" : "CLIENT",
   "username" : "client3",
   "password" : "client3@2026",
   "companyCode" : "CL-03",
-  "companyName" : "Client Company 3"
+  "companyName" : "Covibe"
 }, {
   "id" : "C4",
   "role" : "CLIENT",
   "username" : "client4",
   "password" : "client4@2026",
   "companyCode" : "CL-04",
-  "companyName" : "Client Company 4"
+  "companyName" : "Universal Soamp"
 } ]
