@@ -1,0 +1,43 @@
+[ {
+  "id" : "A1",
+  "role" : "ADMIN",
+  "username" : "admin1",
+  "password" : "covibe@2026",
+  "companyCode" : "COVIBE-HQ",
+  "companyName" : "CoVibe Admin 1"
+}, {
+  "id" : "A2",
+  "role" : "ADMIN",
+  "username" : "admin2",
+  "password" : "covibe@2027",
+  "companyCode" : "COVIBE-HQ",
+  "companyName" : "CoVibe Admin 2"
+}, {
+  "id" : "C1",
+  "role" : "CLIENT",
+  "username" : "client1",
+  "password" : "client1@2026",
+  "companyCode" : "CL-01",
+  "companyName" : "Client Company 1"
+}, {
+  "id" : "C2",
+  "role" : "CLIENT",
+  "username" : "client2",
+  "password" : "client2@2026",
+  "companyCode" : "CL-02",
+  "companyName" : "Client Company 2"
+}, {
+  "id" : "C3",
+  "role" : "CLIENT",
+  "username" : "client3",
+  "password" : "client3@2026",
+  "companyCode" : "CL-03",
+  "companyName" : "Client Company 3"
+}, {
+  "id" : "C4",
+  "role" : "CLIENT",
+  "username" : "client4",
+  "password" : "client4@2026",
+  "companyCode" : "CL-04",
+  "companyName" : "Client Company 4"
+} ]
