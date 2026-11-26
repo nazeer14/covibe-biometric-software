@@ -28,6 +28,11 @@ public class AuthController {
         return Map.of("status", "logged_out");
     }
 
+    @GetMapping("/me")
+    public Account me(@RequestHeader(value = "X-Auth-Token", required = false) String token) {
+        return store.requireUser(token);
+    }
+
     @GetMapping("/accounts")
     public List<Account> accounts(@RequestHeader(value = "X-Auth-Token", required = false) String token) {
         store.requireAdmin(token);
